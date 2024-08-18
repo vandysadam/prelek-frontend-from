@@ -1,10 +1,7 @@
+import Dashboard from './pages/dasboard';
+
 function App() {
-  return (
-    <div>
-      <span className="text-red-600">this is tailwind</span>
-      Button
-    </div>
-  );
+  return <Dashboard />;
 }
 
 export default App;
