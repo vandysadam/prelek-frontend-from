@@ -1,48 +1,45 @@
-import { Inbox, Send, ArchiveX, Trash2, Archive, File } from 'lucide-react';
+import { ChevronRight, LayoutDashboard, User } from 'lucide-react';
+import React from 'react';
+import { Button } from './ui/button';
 import { Nav } from './ui/nav';
 
 export interface SidebarProps {}
 
 export default function Sidebar({}: SidebarProps) {
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+
+  function toggleCollapsed() {
+    setIsCollapsed(!isCollapsed);
+  }
+
   return (
-    <div>
+    <div className="relative min-w-[80px] border-r px-3 pb-10 pt-24">
+      <div className="absolute right-[-20px] top-7">
+        <Button
+          variant="secondary"
+          className="rounded-full p-2"
+          onClick={toggleCollapsed}
+        >
+          <ChevronRight
+            className={`transform transition-transform duration-300 ${
+              isCollapsed ? 'rotate-0' : 'rotate-180'
+            }`}
+          />
+        </Button>
+      </div>
       <Nav
-        isCollapsed={false}
+        isCollapsed={isCollapsed}
         links={[
           {
-            title: 'Inbox',
+            title: 'Dashboard',
             label: '128',
-            icon: Inbox,
+            icon: LayoutDashboard,
             variant: 'default',
           },
           {
-            title: 'Drafts',
+            title: 'Users',
             label: '9',
-            icon: File,
-            variant: 'ghost',
-          },
-          {
-            title: 'Sent',
-            label: '',
-            icon: Send,
-            variant: 'ghost',
-          },
-          {
-            title: 'Junk',
-            label: '23',
-            icon: ArchiveX,
-            variant: 'ghost',
-          },
-          {
-            title: 'Trash',
-            label: '',
-            icon: Trash2,
-            variant: 'ghost',
-          },
-          {
-            title: 'Archive',
-            label: '',
-            icon: Archive,
+            icon: User,
             variant: 'ghost',
           },
         ]}
