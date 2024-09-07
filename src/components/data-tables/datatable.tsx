@@ -1,33 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  ColumnDef,
-} from '@tanstack/react-table';
+import { Button } from '@/components/ui/button';
 import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table'; // Adjust based on your file paths
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import React, { useEffect, useState } from 'react';
 
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
   DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  ChevronDown,
-  ArrowUp,
   ArrowDown,
+  ArrowUp,
   ArrowUpDown,
+  ChevronDown,
   Search,
 } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
@@ -151,20 +150,11 @@ const DataTable = <T extends object>({
   return (
     <div>
       {/* Column Dropdown Menu */}
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         {/* Global Filter */}
         {options.enableGlobalFilter && (
-          // <div className="relative w-full pr-5">
-          //   <Search className="absolute right-9 top-3 h-4 w-4 text-muted-foreground" />
-          //   <Input
-          //     placeholder="Search..."
-          //     type="text"
-          //     value={globalFilter}
-          //     className="w-full"
-          //     onChange={(e) => setGlobalFilter(e.target.value)}
-          //   />
-          // </div>
-          <div className="relative w-full pr-5 mb-4">
+          <div className="relative w-full pr-5">
+            <Search className="absolute right-9 top-3 h-4 w-4 text-muted-foreground" />
             <DebounceInput
               value={globalFilter}
               onChange={(value) => {
@@ -172,6 +162,7 @@ const DataTable = <T extends object>({
                 if (onSearchChange) onSearchChange(value.toString()); // Trigger search handler
               }}
               placeholder="Search..."
+              className="w-full h-10 pl-3 pr-10" // Adjust height and padding for better alignment
             />
           </div>
         )}
