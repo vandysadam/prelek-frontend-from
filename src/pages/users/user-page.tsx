@@ -10,6 +10,8 @@ import {
   CardContent,
 } from '../../components/ui/card';
 import DashboardLayout from '../../layouts/dasboard-layout';
+import { formatRupiah } from '../../utils/format.rupiah';
+import UserAvatarCell from './components/user.avatar.cell';
 
 export default function UserPage() {
   const [userList, setUserList] = useState<User[]>([]);
@@ -58,10 +60,22 @@ export default function UserPage() {
 
   // Column definitions for the table
   const columns: ColumnDef<User>[] = [
-    { accessorKey: 'user_id', header: 'User Id' },
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'roles', header: 'Roles' },
+    {
+      accessorKey: 'name',
+      header: 'User',
+      cell: (props) => (
+        <UserAvatarCell
+          id={props.row.original.user_id}
+          name={props.row.original.name}
+        />
+      ),
+    },
     { accessorKey: 'house_number', header: 'No Rumah' },
+    {
+      accessorKey: 'wallet.balance',
+      header: 'Balance',
+      cell: (props) => formatRupiah(props.row.original?.wallet?.balance ?? 0), // Apply Rupiah formatting
+    },
   ];
 
   return (
