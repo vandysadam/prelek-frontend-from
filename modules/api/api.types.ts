@@ -1,14 +1,16 @@
-import { AxiosRequestHeaders } from "axios";
+import { AxiosRequestHeaders } from 'axios';
 
-declare module "@reduxjs/toolkit/query/react" {
+declare module '@reduxjs/toolkit/query/react' {
   export interface FetchArgs {
     headers?: AxiosRequestHeaders;
   }
 }
 
-export class BaseFilter {
+export class BasePaginationFilter {
   page?: number = 1;
-  limit?: number = 10;
+  limit?: number = 0;
+  sort_direction?: string;
+  sort_by?: string;
 }
 
 export interface LinkHeaderEntry {

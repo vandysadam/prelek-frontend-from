@@ -1,5 +1,4 @@
-// import { UserRoleEnum } from '../../enums/user-role.enum';
-
+// ----------------- USER
 export interface User {
   user_id: string;
   name: string;
@@ -8,8 +7,28 @@ export interface User {
   roles: string;
   phone_number: string;
   address: string;
+  wallet: WalletEntity;
+}
+// ----------------- USER
+
+// ----------------- WALLET
+export interface WalletEntity {
+  id: string;
+  userid: string;
+  balance: number;
+  type: string;
+  user?: CurrentUserDTO;
 }
 
+export enum WALLET_TYPE_ENUM {
+  NORMAL = 'NORMAL', // dompet warga
+  VAULT = 'VAULT', // penyimpanan kas / DOMPET ADMIN
+}
+
+export type WALLET_TYPE = keyof typeof WALLET_TYPE_ENUM;
+// ----------------- WALLET
+
+// ----------------- ROLE
 /**
  * Organization-scoped roles used by Iqam Global / Ommar.net.
  */
@@ -22,6 +41,9 @@ export enum ROLE_TYPE_ENUM {
 
 export type RoleType = keyof typeof ROLE_TYPE_ENUM;
 
+// ----------------- ROLE
+
+// ----------------- Current User
 export interface CurrentUserDTO {
   id: string;
   name: string;

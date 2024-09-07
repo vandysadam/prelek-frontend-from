@@ -29,6 +29,7 @@ import LoginPage from '../src/pages/login';
 //   () => import('./pages/subscription/SubscriptionRoutes'),
 // );
 const Dashboard = React.lazy(() => import('./../src/pages/dasboard'));
+const UserPage = React.lazy(() => import('../src/pages/users/user-page'));
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -54,16 +55,20 @@ const AppRouter: React.FC = () => {
           }
         />
         {/* User Group  */}
-        {/* <Route
-          path="/user/*"
+        <Route
+          path="/users/*"
           element={
             <React.Suspense fallback={<div>Loading...</div>}>
               <RequireAuth>
-                <UserManagementRoutes />
+                <Routes>
+                  <Route path="/list" element={<UserPage />}></Route>
+                  {/* <Route path="/add" element={<UserAdd />}></Route>
+                  <Route path="/edit/:id" element={<UserEdit />}></Route> */}
+                </Routes>
               </RequireAuth>
             </React.Suspense>
           }
-        ></Route> */}
+        ></Route>
 
         <Route path="/login" element={<LoginPage />}></Route>
         {/*

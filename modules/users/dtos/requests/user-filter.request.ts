@@ -1,7 +1,7 @@
-import { BaseFilterRequest } from "../../../core/base-filter.request";
-import { UserRoleEnum } from "../../enums/user-role.enum";
+import { UserRoleEnum } from '../../enums/user-role.enum';
+import { BasePaginationFilter } from '../../../api/api.types';
 
-export class UserFilterRequest extends BaseFilterRequest {
+export class UserFilterRequest extends BasePaginationFilter {
   username?: string;
   fullName?: string;
   email?: string;

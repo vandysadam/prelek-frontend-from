@@ -34,12 +34,14 @@ export default function Sidebar({}: SidebarProps) {
             title: 'Dashboard',
             label: '128',
             icon: LayoutDashboard,
+            href: '/',
             variant: 'default',
           },
           {
             title: 'Users',
             label: '9',
             icon: User,
+            href: '/users/list',
             variant: 'ghost',
           },
         ]}

@@ -1,4 +1,4 @@
-import { CurrentUserDTO } from '../users/dtos/models/user.entity';
+import { CurrentUserDTO } from '../users/dtos/models/entity';
 
 export interface AuthState {
   isAuthenticated: boolean;
