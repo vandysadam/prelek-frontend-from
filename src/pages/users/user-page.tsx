@@ -16,11 +16,26 @@ export default function UserPage() {
   const [totalData, setTotalData] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5); // Default page size
+  const [searchParams, setSearchParams] = useState(''); // New state for search params
+  const [sortBy, setSortBy] = useState<string | null>(null); // Initially null, so no sort is applied
+  const [sortDirection, setSortDirection] = useState<string | null>(null); // Initially null, so no sort is applied
+
+  // Build query object conditionally based on whether sortBy and sortDirection are set
+  const queryObject = {
+    page: currentPage,
+    limit: pageSize,
+    search_params: searchParams,
+    ...(sortBy &&
+      sortDirection && { sort_by: sortBy, sort_direction: sortDirection }), // Only include sorting if both values exist
+  };
 
   // Fetch data with dynamic pageSize and currentPage
   const { data, isLoading, refetch } = useGetAllUserPaginatedQuery(
-    { page: currentPage, limit: pageSize }, // Pass page and limit
-    { skip: false, refetchOnMountOrArgChange: true },
+    queryObject,
+    {
+      skip: false,
+      refetchOnMountOrArgChange: true,
+    },
   );
 
   // Fetch data and update states when API response changes
@@ -36,16 +51,17 @@ export default function UserPage() {
     fetchData();
   }, [fetchData]);
 
-  // Refetch data when page or page size changes
+  // Refetch data when page, page size, or sorting changes
   useEffect(() => {
     refetch();
-  }, [currentPage, pageSize, refetch]);
+  }, [currentPage, pageSize, searchParams, sortBy, sortDirection, refetch]);
 
   // Column definitions for the table
   const columns: ColumnDef<User>[] = [
     { accessorKey: 'user_id', header: 'User Id' },
     { accessorKey: 'name', header: 'Name' },
     { accessorKey: 'roles', header: 'Roles' },
+    { accessorKey: 'house_number', header: 'No Rumah' },
   ];
 
   return (
@@ -66,6 +82,14 @@ export default function UserPage() {
               totalData={totalData} // Pass total number of entries
               onPageSizeChange={setPageSize} // Handler for changing page size
               onPaginate={setCurrentPage} // Handler for changing current page
+              onSearchChange={setSearchParams} // Handler for changing search query
+              onSortChange={(sortBy, sortDirection) => {
+                setSortBy(sortBy);
+                setSortDirection(sortDirection);
+              }} // Sorting is only applied when header is clicked
+              options={{
+                enableGlobalFilter: true,
+              }}
             />
           </CardContent>
         </Card>

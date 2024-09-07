@@ -2,6 +2,7 @@ import { UserRoleEnum } from '../../enums/user-role.enum';
 import { BasePaginationFilter } from '../../../api/api.types';
 
 export class UserFilterRequest extends BasePaginationFilter {
+  search_params?: string;
   username?: string;
   fullName?: string;
   email?: string;
