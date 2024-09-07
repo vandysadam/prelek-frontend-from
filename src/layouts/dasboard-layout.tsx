@@ -8,7 +8,7 @@ export interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="flex h-screen bg-white text-black">
+    <div className="flex h-screen bg-slate-100 text-black">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />

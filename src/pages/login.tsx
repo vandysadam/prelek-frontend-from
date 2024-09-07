@@ -16,7 +16,8 @@ import { useAuthLoginMutation } from '../../modules/auth/auth.api';
 import { useTypedDispatch } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import { authSlice } from '../../modules/auth/auth.slice';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Lock, LockOpen } from 'lucide-react';
+import { useState } from 'react';
 
 // Define the schema using Zod
 const loginSchema = z.object({
@@ -30,6 +31,7 @@ type LoginFormInputs = z.infer<typeof loginSchema>; // Infer the form value type
 
 const LoginPage: React.FC = () => {
   const [authLogin, loginProcess] = useAuthLoginMutation();
+  const [isPasswordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
 
   // Setup form with the resolver for zod validation
   const form = useForm<LoginFormInputs>({
@@ -63,10 +65,10 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black">
-      <div className="w-full max-w-sm p-8 space-y-6 bg-gray-800 rounded-lg shadow-md">
+    <div className="flex items-center justify-center min-h-screen bg-slate-200">
+      <div className="w-full max-w-sm p-8 space-y-6 bg-slate-600 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center text-white">Login</h2>
-        <p className="text-sm text-center text-gray-400">
+        <p className="text-sm text-center text-white">
           Enter your email below to login to your account.
         </p>
 
@@ -77,7 +79,7 @@ const LoginPage: React.FC = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-white">Email</FormLabel>
                   <FormControl>
                     <Input placeholder="m@example.com" {...field} />
                   </FormControl>
@@ -85,7 +87,7 @@ const LoginPage: React.FC = () => {
                 </FormItem>
               )}
             />
-
+            {/* 
             <FormField
               control={form.control}
               name="password"
@@ -94,6 +96,36 @@ const LoginPage: React.FC = () => {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="Password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white">Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={isPasswordVisible ? 'text' : 'password'} // Toggle between text and password
+                        placeholder="Password"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                        onClick={() => setPasswordVisible(!isPasswordVisible)}
+                      >
+                        {isPasswordVisible ? (
+                          <LockOpen className="h-5 w-5" />
+                        ) : (
+                          <Lock className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
