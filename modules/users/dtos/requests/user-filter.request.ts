@@ -10,3 +10,11 @@ export class UserFilterRequest extends BasePaginationFilter {
   phoneNumber?: string;
   creatorId?: string;
 }
+export class addUserFilterRequest {
+  name!: string;
+  password!: string;
+  house_number!: number;
+  roles!: string;
+  phone_number!: string;
+  address!: string;
+}

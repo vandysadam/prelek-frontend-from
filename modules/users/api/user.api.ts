@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { apiBaseQuery } from '../../api/api.query';
 import { BaseResponse, PaginationResponse } from '../../api/api.types';
-import { User } from '../dtos/models/entity';
+import { User, User1, UserAdd } from '../dtos/models/entity';
 import { UserFilterRequest } from '../dtos/requests/user-filter.request';
 
 // import { LoginRequest, LoginResponse } from "./types";
@@ -12,11 +12,11 @@ export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: apiBaseQuery,
   endpoints: (builder) => ({
-    createUser: builder.mutation<BaseResponse<User>, User>({
+    createUser: builder.mutation<BaseResponse<UserAdd>, UserAdd>({
       query: (data) => {
         return {
           method: 'POST',
-          url: '/api/users',
+          url: '/users/create',
           data,
         };
       },
@@ -55,7 +55,7 @@ export const userApi = createApi({
       query: (data) => {
         return {
           method: 'GET',
-          url: `/api/users/${data.id}`,
+          url: `/users/${data.id}`,
         };
       },
     }),
@@ -83,7 +83,7 @@ export const userApi = createApi({
         };
       },
     }),
-    updateUser: builder.mutation<BaseResponse<User>, User>({
+    updateUser: builder.mutation<BaseResponse<User1>, User1>({
       query: (data) => {
         const { user_id, roles, ...form } = data;
         return {

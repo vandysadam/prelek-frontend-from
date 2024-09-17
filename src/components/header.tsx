@@ -1,6 +1,6 @@
 // components/Header.tsx
 
-import UserSection from './user-section';
+import UserSection from '../assets/user-section';
 
 export default function Header() {
   return (

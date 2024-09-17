@@ -12,6 +12,8 @@ import {
 import DashboardLayout from '../../layouts/dasboard-layout';
 import { formatRupiah } from '../../utils/format.rupiah';
 import UserAvatarCell from './components/user.avatar.cell';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function UserPage() {
   const [userList, setUserList] = useState<User[]>([]);
@@ -40,6 +42,11 @@ export default function UserPage() {
     },
   );
 
+  const navigate = useNavigate();
+  const handleClick = () => {
+    // Navigasi ke /users/add
+    navigate('/users/add');
+  };
   // Fetch data and update states when API response changes
   const fetchData = useCallback(() => {
     if (data?.data) {
@@ -76,14 +83,44 @@ export default function UserPage() {
       header: 'Balance',
       cell: (props) => formatRupiah(props.row.original?.wallet?.balance ?? 0), // Apply Rupiah formatting
     },
+    {
+      accessorKey: 'actions', // Kolom untuk tindakan (Edit & Delete)
+      header: 'Actions',
+      cell: (props) => (
+        <div className="flex space-x-2">
+          <Link
+            className="text-blue-500 hover:underline"
+            to={`/users/edit/${props.row.original.user_id}`}
+          >
+            <Pencil size="17" className="inline mr-1" />
+          </Link>
+          <button
+            className="text-red-500 hover:underline"
+            // onClick={() => handleDelete(props.row.original.user_id)}
+          >
+            <Trash2 size="17" className="inline mr-1" />
+          </button>
+        </div>
+      ),
+    },
   ];
+  // const handleEdit = (userId: string) => {
+  //   navigate(`/users/edit/${row.original.userId}`);
+  //   console.log(userId); // Navigasi ke halaman edit
+  // };
 
   return (
     <DashboardLayout>
       <div className="py-12">
         <Card>
           <CardHeader>
-            <CardTitle>Users List</CardTitle>
+            <CardTitle className="flex justify-between">
+              Users List
+              <Plus
+                onClick={handleClick}
+                className="cursor-pointer hover:text-blue-500 transition-colors duration-300"
+              />
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <DataTable

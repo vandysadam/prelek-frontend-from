@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import RequireAuth from './RequireAuth';
 import LoginPage from '../src/pages/login';
+import UserEdit from '../src/pages/users/edit';
 
 // import 'react-toastify/dist/ReactToastify.css';
 // import RequireAuth from './components/auth/RequireAuth';
@@ -30,6 +31,7 @@ import LoginPage from '../src/pages/login';
 // );
 const Dashboard = React.lazy(() => import('./../src/pages/dasboard'));
 const UserPage = React.lazy(() => import('../src/pages/users/user-page'));
+const UserAdd = React.lazy(() => import('../src/pages/users/user-add'));
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -62,8 +64,8 @@ const AppRouter: React.FC = () => {
               <RequireAuth>
                 <Routes>
                   <Route path="/list" element={<UserPage />}></Route>
-                  {/* <Route path="/add" element={<UserAdd />}></Route>
-                  <Route path="/edit/:id" element={<UserEdit />}></Route> */}
+                  <Route path="/add" element={<UserAdd />}></Route>
+                  <Route path="/edit/:id" element={<UserEdit />}></Route>
                 </Routes>
               </RequireAuth>
             </React.Suspense>

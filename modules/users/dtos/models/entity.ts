@@ -1,5 +1,7 @@
 // ----------------- USER
 export interface User {
+  accessToken: any;
+  user: any;
   user_id: string;
   name: string;
   password: string;
@@ -7,9 +9,27 @@ export interface User {
   roles: string;
   phone_number: string;
   address: string;
-  wallet: WalletEntity;
+  wallet?: WalletEntity;
 }
 // ----------------- USER
+
+export interface User1 {
+  user_id?: string;
+  name?: string;
+  password?: string;
+  house_number?: number;
+  roles?: string;
+  phone_number?: string;
+  address?: string;
+}
+
+export interface UserAdd {
+  name: string;
+  password: string;
+  house_number: number;
+  phone_number: string;
+  address: string;
+}
 
 // ----------------- WALLET
 export interface WalletEntity {
