@@ -13,11 +13,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, Lock, LockOpen } from 'lucide-react';
+import { ArrowLeft, Loader2, Lock, LockOpen } from 'lucide-react';
 import { useState } from 'react';
 import { useCreateUserMutation } from '../../../modules/users/api/user.api';
 import DashboardLayout from '../../layouts/dasboard-layout';
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../../components/ui/tooltip';
 const addSchema = z.object({
   name: z.string(),
   password: z.string().min(6, {
@@ -59,6 +64,10 @@ const UserAdd: React.FC = () => {
   });
 
   const navigate = useNavigate();
+  const handleClick = () => {
+    // Navigasi ke /users
+    navigate('/users/list');
+  };
 
   const onSubmit = async (formValue: AddFormInputs) => {
     const { name, password, house_number, phone_number, address } = formValue;
@@ -84,8 +93,30 @@ const UserAdd: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="w-full p-8 space-y-6 ">
-        <h2 className="text-2xl font-bold text-center text-black">Add User</h2>
-        <p className="text-sm text-center text-black">add user account here.</p>
+        <div className="flex items-center justify-between">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ArrowLeft
+                  onClick={handleClick}
+                  className="cursor-pointer hover:text-blue-500 transition-colors duration-300"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Back To List User</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <div>
+            <h2 className="text-2xl font-bold text-center text-black">
+              Add User
+            </h2>
+            <p className="text-sm text-center text-black">
+              add user account here.
+            </p>
+          </div>
+          <div></div>
+        </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
