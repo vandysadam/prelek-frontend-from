@@ -12,11 +12,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Loader2, Lock, LockOpen } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
 import {
   useGetUserDetailQuery,
-  useUpdateUserMutation,
+  useTopupUserMutation,
 } from '../../../modules/users/api/user.api';
 import DashboardLayout from '../../layouts/dasboard-layout';
 import { toast } from 'react-toastify';
@@ -27,36 +27,22 @@ import {
   TooltipTrigger,
 } from '../../components/ui/tooltip';
 
-const editSchema = z.object({
+const topupSchema = z.object({
   name: z.string(),
-  password: z
-    .string()
-    .min(6, {
-      message: 'Password must be at least 6 characters.',
-    })
-    .optional()
-    .or(z.literal('')),
   house_number: z
     .number()
     .min(1)
     .refine((val) => !isNaN(Number(val)), {
       message: 'House number must be at least 1.',
     }),
-  phone_number: z
-    .string()
-    .trim()
-    .regex(
-      /^(\+62|62)?0?8[0-9]\d{7,10}$/,
-      'Invalid number, start with (+62/62/08/8), and must be 10-13 digits',
-    ),
-  address: z.string().min(1, {
-    message: 'Please enter your address.',
+  amount: z.number().min(100, {
+    message: 'Amount must be at least 100.',
   }),
 });
 
-type EditFormInputs = z.infer<typeof editSchema>;
+type EditFormInputs = z.infer<typeof topupSchema>;
 
-const UserEdit: React.FC = () => {
+const UserTopup: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Mendapatkan ID dari URL
   const validId: string = id!;
 
@@ -69,18 +55,14 @@ const UserEdit: React.FC = () => {
   const { data: userData, refetch } = useGetUserDetailQuery({
     id: validId,
   });
-  const [updateUser, { isLoading: updateLoading }] = useUpdateUserMutation();
-
-  const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [updateUser, { isLoading: updateLoading }] = useTopupUserMutation();
 
   const form = useForm<EditFormInputs>({
-    resolver: zodResolver(editSchema),
+    resolver: zodResolver(topupSchema),
     defaultValues: {
       name: '',
-      house_number: 0,
-      phone_number: '',
-      address: '',
-      password: '',
+      house_number: userData?.data?.house_number,
+      amount: 0,
     },
   });
 
@@ -89,19 +71,16 @@ const UserEdit: React.FC = () => {
       form.reset({
         name: userData?.data?.name || '',
         house_number: userData?.data?.house_number || 0,
-        phone_number: userData?.data?.phone_number || '',
-        address: userData?.data?.address || '',
-        password: userData?.data?.password || '',
+        amount: userData?.data?.wallet?.balance || 0,
       });
     }
   }, [userData, form]);
 
   const handleSubmit = async (formValue: EditFormInputs) => {
     try {
-      const { ...userData } = formValue;
       await updateUser({
-        ...userData,
-        user_id: id,
+        house_number: formValue.house_number,
+        amount: formValue.amount,
       }).unwrap();
       setTimeout(() => {
         toast.success(`${formValue.name} Updated!`, {
@@ -154,10 +133,10 @@ const UserEdit: React.FC = () => {
           </TooltipProvider>
           <div>
             <h2 className="text-2xl font-bold text-center text-black">
-              Edit User
+              Topup User
             </h2>
             <p className="text-sm text-center text-black">
-              edit user account here.
+              Topup user account here.
             </p>
           </div>
           <div></div>
@@ -175,7 +154,12 @@ const UserEdit: React.FC = () => {
                 <FormItem>
                   <FormLabel className="text-black">Nama</FormLabel>
                   <FormControl>
-                    <Input placeholder="Jhon doe" {...field} />
+                    <Input
+                      placeholder="Jhon doe"
+                      {...field}
+                      readOnly
+                      className="cursor-default"
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -195,6 +179,8 @@ const UserEdit: React.FC = () => {
                       {...field}
                       value={field.value || ''}
                       onChange={(e) => field.onChange(Number(e.target.value))}
+                      readOnly
+                      className="cursor-default"
                     />
                   </FormControl>
                   <FormMessage />
@@ -203,55 +189,18 @@ const UserEdit: React.FC = () => {
             />
             <FormField
               control={form.control}
-              name="phone_number"
+              name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-black">Nomer Telp</FormLabel>
+                  <FormLabel className="text-black">Nominal Topup</FormLabel>
                   <FormControl>
-                    <Input placeholder="+62, 08" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-black">Alamat</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Jl.xxxx.xxxxxx" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-black">Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={isPasswordVisible ? 'text' : 'password'}
-                        placeholder="Password"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
-                        onClick={() => setPasswordVisible(!isPasswordVisible)}
-                      >
-                        {isPasswordVisible ? (
-                          <LockOpen className="h-5 w-5" />
-                        ) : (
-                          <Lock className="h-5 w-5" />
-                        )}
-                      </button>
-                    </div>
+                    <Input
+                      type="number"
+                      placeholder="Rp.1xxxx"
+                      {...field}
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -279,4 +228,4 @@ const UserEdit: React.FC = () => {
   );
 };
 
-export default UserEdit;
+export default UserTopup;

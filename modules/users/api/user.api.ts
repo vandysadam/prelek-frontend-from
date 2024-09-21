@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { apiBaseQuery } from '../../api/api.query';
 import { BaseResponse, PaginationResponse } from '../../api/api.types';
-import { User, User1, UserAdd } from '../dtos/models/entity';
+import { editUser, topUp, User, UserAdd } from '../dtos/models/entity';
 import { UserFilterRequest } from '../dtos/requests/user-filter.request';
 
 // import { LoginRequest, LoginResponse } from "./types";
@@ -83,12 +83,24 @@ export const userApi = createApi({
         };
       },
     }),
-    updateUser: builder.mutation<BaseResponse<User1>, User1>({
+
+    topupUser: builder.mutation<BaseResponse<topUp>, topUp>({
       query: (data) => {
-        const { user_id, roles, ...form } = data;
+        const { ...form } = data;
+        return {
+          method: 'POST',
+          url: '/wallets/top-up',
+          data: { ...form },
+        };
+      },
+    }),
+
+    updateUser: builder.mutation<BaseResponse<editUser>, editUser>({
+      query: (data) => {
+        const { user_id, ...form } = data;
         return {
           method: 'PUT',
-          url: `/api/users/${data.user_id}`,
+          url: `/users/update/${data.user_id}`,
           data: { ...form },
         };
       },
@@ -114,4 +126,5 @@ export const {
   useVerifyUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useTopupUserMutation,
 } = userApi;

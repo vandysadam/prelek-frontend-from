@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import RequireAuth from './RequireAuth';
 import LoginPage from '../src/pages/login';
 import UserEdit from '../src/pages/users/edit';
+import UserTopup from '../src/pages/users/user-topup';
 
 // import 'react-toastify/dist/ReactToastify.css';
 // import RequireAuth from './components/auth/RequireAuth';
@@ -72,6 +73,7 @@ const AppRouter: React.FC = () => {
                   <Route path="/list" element={<UserPage />}></Route>
                   <Route path="/add" element={<UserAdd />}></Route>
                   <Route path="/edit/:id" element={<UserEdit />}></Route>
+                  <Route path="/topup/:id" element={<UserTopup />}></Route>
                 </Routes>
               </RequireAuth>
             </React.Suspense>

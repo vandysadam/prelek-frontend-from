@@ -12,8 +12,14 @@ import {
 import DashboardLayout from '../../layouts/dasboard-layout';
 import { formatRupiah } from '../../utils/format.rupiah';
 import UserAvatarCell from './components/user.avatar.cell';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { CircleDollarSign, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../../components/ui/tooltip';
 
 export default function UserPage() {
   const [userList, setUserList] = useState<User[]>([]);
@@ -88,18 +94,53 @@ export default function UserPage() {
       header: 'Actions',
       cell: (props) => (
         <div className="flex space-x-2">
-          <Link
-            className="text-blue-500 hover:underline"
-            to={`/users/edit/${props.row.original.user_id}`}
-          >
-            <Pencil size="17" className="inline mr-1" />
-          </Link>
-          <button
-            className="text-red-500 hover:underline"
-            // onClick={() => handleDelete(props.row.original.user_id)}
-          >
-            <Trash2 size="17" className="inline mr-1" />
-          </button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  className="text-blue-500 hover:underline"
+                  to={`/users/edit/${props.row.original.user_id}`}
+                >
+                  <Pencil size="17" className="inline mr-1" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Edit User</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="text-red-500 hover:underline"
+                  // onClick={() => handleDelete(props.row.original.user_id)}
+                >
+                  <Trash2 size="17" className="inline mr-1" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete User</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  className="text-blue-500 hover:underline"
+                  to={`/users/topup/${props.row.original.user_id}`}
+                >
+                  <CircleDollarSign size="17" className="inline mr-1" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Top Up Wallet User</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       ),
     },
@@ -116,10 +157,19 @@ export default function UserPage() {
           <CardHeader>
             <CardTitle className="flex justify-between">
               Users List
-              <Plus
-                onClick={handleClick}
-                className="cursor-pointer hover:text-blue-500 transition-colors duration-300"
-              />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Plus
+                      onClick={handleClick}
+                      className="cursor-pointer hover:text-blue-500 transition-colors duration-300"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Add User</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardTitle>
           </CardHeader>
           <CardContent>

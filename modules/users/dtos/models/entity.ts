@@ -13,7 +13,7 @@ export interface User {
 }
 // ----------------- USER
 
-export interface User1 {
+export interface editUser {
   user_id?: string;
   name?: string;
   password?: string;
@@ -21,6 +21,11 @@ export interface User1 {
   roles?: string;
   phone_number?: string;
   address?: string;
+}
+
+export interface topUp {
+  house_number?: number;
+  amount?: number;
 }
 
 export interface UserAdd {
