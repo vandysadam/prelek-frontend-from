@@ -36,6 +36,12 @@ import { ToastContainer } from 'react-toastify';
 const Dashboard = React.lazy(() => import('./../src/pages/dasboard'));
 const UserPage = React.lazy(() => import('../src/pages/users/user-page'));
 const UserAdd = React.lazy(() => import('../src/pages/users/user-add'));
+const ActivityPage = React.lazy(
+  () => import('../src/pages/activities/activity-page'),
+);
+const ActivityAdd = React.lazy(
+  () => import('../src/pages/activities/activity-add'),
+);
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -77,6 +83,20 @@ const AppRouter: React.FC = () => {
           }
         ></Route>
 
+        <Route
+          path="/activities/*"
+          element={
+            <React.Suspense fallback={<div>Loading...</div>}>
+              <RequireAuth>
+                <Routes>
+                  <Route path="/list" element={<ActivityPage />}></Route>
+                  <Route path="/add" element={<ActivityAdd />}></Route>
+                  <Route path="/edit/:id" element={<UserEdit />}></Route>
+                </Routes>
+              </RequireAuth>
+            </React.Suspense>
+          }
+        ></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         {/*
         <Route path="/admin/signin" element={<SigninUser />}></Route>

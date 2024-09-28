@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from './ui/button';
 import { Nav } from './ui/nav';
 import { NavLink } from 'react-router-dom';
-import logoUrl from '/home/art3mis/projects/prelek-frontend-from/src/images/prelek-logo.png';
+import logoUrl from '/src/images/prelek-logo.png';
 
 export interface SidebarProps {}
 
@@ -48,6 +48,11 @@ export default function Sidebar({}: SidebarProps) {
               label: '9',
               icon: User,
               href: '/users/list',
+            },
+            {
+              title: 'Activity',
+              icon: User,
+              href: '/activities/list',
             },
           ]}
         />
