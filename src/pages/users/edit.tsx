@@ -19,13 +19,13 @@ import {
   useUpdateUserMutation,
 } from '../../../modules/users/api/user.api';
 import DashboardLayout from '../../layouts/dasboard-layout';
-import { toast } from 'react-toastify';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '../../components/ui/tooltip';
+import { toast } from 'react-toastify';
 
 const editSchema = z.object({
   name: z.string(),
@@ -103,35 +103,26 @@ const UserEdit: React.FC = () => {
         ...userData,
         user_id: id,
       }).unwrap();
-      setTimeout(() => {
-        toast.success(`${formValue.name} Updated!`, {
-          theme: 'dark',
-        });
-      }, 0.1);
+
       refetch();
       navigate('/users/list');
-    } catch (error) {
-      const err = error as { data?: { message?: string } };
-      setTimeout(() => {
-        if (err.data && err.data.message) {
-          // Contoh: error.data.message berisi pesan error dari backend
-          if (err.data.message.includes('Nomor rumah sudah ada yang punya')) {
-            form.setError('house_number', {
-              type: 'manual',
-              message: 'Nomor rumah sudah terdaftar',
-            });
-          } else {
-            toast.error(err.data.message, {
-              theme: 'dark',
-            });
-          }
-        } else {
-          toast.error('Something went wrong!', {
-            theme: 'dark',
-          });
-        }
-      }, 0.1);
-      console.log(error);
+      toast.success('User updated successfully!');
+    } catch (error: any) {
+      console.error('Error detail:', error); // Log seluruh objek error
+
+      // Tangkap error dan tampilkan dengan toast
+      if (error.data?.message) {
+        toast.error(error.data.message, {
+          autoClose: 5000, // Auto close dalam 5 detik
+          hideProgressBar: false, // Progress bar ditampilkan
+        });
+      } else {
+        // Jika error tidak memiliki pesan, tampilkan pesan default
+        toast.error('An unknown error occurred. Please try again.', {
+          autoClose: 5000,
+          hideProgressBar: false,
+        });
+      }
     }
   };
 

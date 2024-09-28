@@ -4,6 +4,9 @@ import RequireAuth from './RequireAuth';
 import LoginPage from '../src/pages/login';
 import UserEdit from '../src/pages/users/edit';
 import UserTopup from '../src/pages/users/user-topup';
+import 'react-toastify/dist/ReactToastify.css'; // Pastikan CSS diimpor
+
+import { ToastContainer } from 'react-toastify';
 
 // import 'react-toastify/dist/ReactToastify.css';
 // import RequireAuth from './components/auth/RequireAuth';
@@ -82,6 +85,19 @@ const AppRouter: React.FC = () => {
         <Route path="*" element={<PageNotFound />}></Route>
         */}
       </Routes>
+      {/* <Toaster /> */}
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 };

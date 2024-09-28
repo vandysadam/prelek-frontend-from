@@ -23,6 +23,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../../components/ui/tooltip';
+import { toast } from 'react-toastify';
+
 const addSchema = z.object({
   name: z.string(),
   password: z.string().min(6, {
@@ -65,31 +67,41 @@ const UserAdd: React.FC = () => {
 
   const navigate = useNavigate();
   const handleClick = () => {
-    // Navigasi ke /users
     navigate('/users/list');
   };
 
   const onSubmit = async (formValue: AddFormInputs) => {
     const { name, password, house_number, phone_number, address } = formValue;
-
     try {
-      const resultAction = await addUsers({
-        name: name,
-        password: password,
-        house_number: house_number,
-        phone_number: phone_number,
-        address: address,
-      })
-        // Skip login if the environment variable is set
-        .unwrap();
+      await addUsers({
+        name,
+        password,
+        house_number,
+        phone_number,
+        address,
+      }).unwrap();
 
-      console.log('User added successfully:', resultAction);
+      toast.success('User updated successfully!');
       navigate('/users/list');
-      // Update Redux state with the user's info
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.error('Error detail:', error); // Log seluruh objek error
+
+      // Tangkap error dan tampilkan dengan toast
+      if (error.data?.message) {
+        toast.error(error.data.message, {
+          autoClose: 5000, // Auto close dalam 5 detik
+          hideProgressBar: false, // Progress bar ditampilkan
+        });
+      } else {
+        // Jika error tidak memiliki pesan, tampilkan pesan default
+        toast.error('An unknown error occurred. Please try again.', {
+          autoClose: 5000,
+          hideProgressBar: false,
+        });
+      }
     }
   };
+
   return (
     <DashboardLayout>
       <div className="w-full p-8 space-y-6 ">
@@ -112,7 +124,7 @@ const UserAdd: React.FC = () => {
               Add User
             </h2>
             <p className="text-sm text-center text-black">
-              add user account here.
+              Add user account here.
             </p>
           </div>
           <div></div>
@@ -178,20 +190,6 @@ const UserAdd: React.FC = () => {
                 </FormItem>
               )}
             />
-            {/* 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
             <FormField
               control={form.control}
               name="password"
@@ -201,7 +199,7 @@ const UserAdd: React.FC = () => {
                   <FormControl>
                     <div className="relative">
                       <Input
-                        type={isPasswordVisible ? 'text' : 'password'} // Toggle between text and password
+                        type={isPasswordVisible ? 'text' : 'password'}
                         placeholder="Password"
                         {...field}
                       />
@@ -234,7 +232,7 @@ const UserAdd: React.FC = () => {
                   Please wait
                 </span>
               ) : (
-                <span>Sign in</span>
+                <span>add user</span>
               )}
             </Button>
           </form>
@@ -243,4 +241,5 @@ const UserAdd: React.FC = () => {
     </DashboardLayout>
   );
 };
+
 export default UserAdd;
