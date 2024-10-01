@@ -13,12 +13,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 // import { useAuthLoginMutation } from '../../modules/auth/auth.api';
-import { useTypedDispatch } from '../../store';
-import { useNavigate } from 'react-router-dom';
-import { authSlice } from '../../modules/auth/auth.slice';
 import { Loader2, Lock, LockOpen } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthLoginMutation } from '../../modules/auth/auth.api';
+import { authSlice } from '../../modules/auth/auth.slice';
+import { useTypedDispatch } from '../../store';
 
 // Define the schema using Zod
 const loginSchema = z.object({

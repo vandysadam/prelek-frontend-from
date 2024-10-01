@@ -9,7 +9,7 @@ export default function Header() {
         {/* Add other elements here, e.g., search bar, notifications, etc. */}
       </div>
       {/* Additional header content like a search bar or user profile icon */}
-      <UserSection name="Alicia Koch" role="Admin" email="a@a.com" />
+      <UserSection />
     </header>
   );
 }

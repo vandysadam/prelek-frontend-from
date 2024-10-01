@@ -8,25 +8,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { authSlice } from '../../modules/auth/auth.slice';
+import { useTypedSelector } from '../../store';
 
-interface UserSectionProps {
-  name: string;
-  role: string;
-  email: string;
-}
+export default function UserSection() {
+  let currentUser = useTypedSelector((state) => state.authSlice.user);
 
-export default function UserSection({
-  name = 'John Doe',
-  role = 'Admin',
-  email = 'a@a.com',
-}: UserSectionProps) {
+  if (!currentUser) {
+    currentUser = {
+      id: 'test123',
+      name: 'John Doe',
+      email: 'johndoe@me.com',
+      roles: 'ADMIN',
+      house_number: 0,
+    };
+  }
+
   const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    name ?? 'John Doe',
+    currentUser?.name ?? 'John Doe',
   )}&background=random&color=fff&size=36`;
+
   const dispatch = useDispatch();
   const router = useNavigate();
 
@@ -45,21 +48,23 @@ export default function UserSection({
           <div className="flex items-center cursor-pointer space-x-3">
             <img
               src={avatarUrl}
-              alt={`${name}'s avatar`}
+              alt={`${currentUser.name}'s avatar`}
               className="w-10 h-10 rounded-full"
             />
             <div>
-              <p className="font-semibold">{name}</p>
-              <p className="text-sm text-gray-500">{role}</p>
+              <p className="font-semibold">{currentUser.name}</p>
+              <p className="text-sm text-gray-500">{currentUser.roles}</p>
             </div>
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{name}</p>
+              <p className="text-sm font-medium leading-none">
+                {currentUser.name}
+              </p>
               <p className="text-xs leading-none text-muted-foreground">
-                {email}
+                {currentUser.email}
               </p>
             </div>
           </DropdownMenuLabel>

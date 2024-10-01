@@ -5,11 +5,11 @@ import { AuthState } from './auth.types';
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
-  persistedToken: "",
+  persistedToken: '',
 };
 
 export const authSlice = createSlice({
-  name: "authSlice",
+  name: 'authSlice',
   initialState: initialState,
   reducers: {
     login: (state, action) => {
@@ -18,15 +18,15 @@ export const authSlice = createSlice({
       state.user = action.payload;
     },
     logout(state) {
-      console.log("logout");
+      console.log('logout');
       state.isAuthenticated = false;
       state.user = null;
-      state.persistedToken = undefined;
+      state.persistedToken = '';
     },
     updateCurrentUser(state, action) {
       state.user = action.payload;
     },
-    updateAccessToken(state, action: PayloadAction<string | undefined>) {
+    updateAccessToken(state, action: PayloadAction<string>) {
       state.persistedToken = action.payload;
       state.isAuthenticated = true;
     },
