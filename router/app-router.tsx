@@ -7,6 +7,7 @@ import UserTopup from '../src/pages/users/user-topup';
 import 'react-toastify/dist/ReactToastify.css'; // Pastikan CSS diimpor
 
 import { ToastContainer } from 'react-toastify';
+import DashboardLoaderPage from './../src/pages/dasboard-layout-loader';
 
 // import 'react-toastify/dist/ReactToastify.css';
 // import RequireAuth from './components/auth/RequireAuth';
@@ -58,8 +59,7 @@ const AppRouter: React.FC = () => {
         <Route
           path="/"
           element={
-            // <React.Suspense fallback={<DashboardLoader />}>
-            <React.Suspense fallback={<div>Loading...</div>}>
+            <React.Suspense fallback={<DashboardLoaderPage />}>
               <RequireAuth>
                 <Dashboard />
               </RequireAuth>
@@ -70,7 +70,7 @@ const AppRouter: React.FC = () => {
         <Route
           path="/users/*"
           element={
-            <React.Suspense fallback={<div>Loading...</div>}>
+            <React.Suspense fallback={<DashboardLoaderPage />}>
               <RequireAuth>
                 <Routes>
                   <Route path="/list" element={<UserPage />}></Route>
@@ -86,7 +86,7 @@ const AppRouter: React.FC = () => {
         <Route
           path="/activities/*"
           element={
-            <React.Suspense fallback={<div>Loading...</div>}>
+            <React.Suspense fallback={<DashboardLoaderPage />}>
               <RequireAuth>
                 <Routes>
                   <Route path="/list" element={<ActivityPage />}></Route>
