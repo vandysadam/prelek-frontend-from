@@ -12,92 +12,105 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useNavigate } from 'react-router-dom';
-import { Loader2, Lock, LockOpen } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { useCreateUserMutation } from '../../../modules/users/api/user.api';
-import DashboardLayout from '../../layouts/dasboard-layout';
+// import { useNavigate } from 'react-router-dom';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../components/ui/card';
+import { Label } from '../../components/ui/label';
 import AddFiles from '../../components/upload';
-
-const MAX_FILE_SIZE = 1000000; // 1MB
-const ACCEPTED_IMAGE_TYPES = [
-  'image/png',
-  'image/jpeg',
-  'image/svg+xml',
-  'image/webp',
-];
+import DashboardLayout from '../../layouts/dasboard-layout';
 
 const addSchema = z.object({
   name: z.string(),
-  picture: z.any().refine((file) => {
-    if (!file) return false;
-    if (file.size > MAX_FILE_SIZE) return false;
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) return false;
-    return true;
-  }),
-  password: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
-  }),
-  house_number: z
-    .number()
-    .min(1)
-    .refine((val) => !isNaN(Number(val)), {
-      message: 'House number must be at least 1.',
+  file: z.instanceof(File).optional(), // Membuat file opsional
+  picture: z.instanceof(File).optional(), // Membuat picture opsional
+  cards: z.array(
+    z.object({
+      name: z.string(),
+      price: z.string(),
+      qty: z.string(),
     }),
-  phone_number: z
-    .string()
-    .trim()
-    .regex(
-      /^(\+62|62)?0?8[0-9]\d{7,10}$/,
-      'Invalid number, start with (+62/62/08/8), and must be 10-13 digits',
-    ),
-  address: z.string().min(1, {
-    message: 'Please enter your address.',
-  }),
+  ),
 });
 
 type AddFormInputs = z.infer<typeof addSchema>;
 
 const ActivityAdd: React.FC = () => {
-  const [addUsers, addProcess] = useCreateUserMutation();
-  const [isPasswordVisible, setPasswordVisible] = useState(false);
+  // const [addProcess] = useCreateUserMutation();
+  const [activityFiles, setActivityFiles] = useState<File[]>([]);
+  const onActivityFileChange = (files: File[]) => {
+    setActivityFiles(files);
+    console.log('Files uploaded:', files);
+  };
 
   const form = useForm<AddFormInputs>({
     resolver: zodResolver(addSchema),
     defaultValues: {
       name: '',
-      house_number: 0,
-      phone_number: '',
-      address: '',
-      password: '',
+      cards: [],
+      file: undefined,
       picture: undefined,
     },
   });
+  form.formState.errors && console.log('Errors:', form.formState.errors);
   // const fileRef = form.register('file');
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const onSubmit = async (formValue: AddFormInputs) => {
-    const { name, password, house_number, phone_number, address } = formValue;
-
+  // const onSubmit = async (formValue: AddFormInputs) => {
+  const onSubmit = async () => {
+    // const { name, picture, price, qty } = formValue;
     try {
-      const resultAction = await addUsers({
-        name: name,
-        password: password,
-        house_number: house_number,
-        phone_number: phone_number,
-        address: address,
-      })
-        // Skip login if the environment variable is set
-        .unwrap();
+      const formData = form.getValues();
 
-      console.log('User added successfully:', resultAction);
-      navigate('/activities/list');
-      // Update Redux state with the user's info
-    } catch (error) {
-      console.log(error);
+      console.log('Data dari form:', formData);
+
+      // Tambahkan file yang diupload dari state activityFiles
+      const finalData = {
+        ...formData,
+        activityFiles, // tambahkan activityFiles ke finalData
+        cards, // tambahkan detail card ke finalData
+      };
+
+      console.log('Data yang akan dikirim:', finalData);
+      // await addProcess({
+      //   name,
+      //   picture,
+      //   price,
+      //   qty,
+      // }).unwrap();
+      // toast.success('User updated successfully!');
+      // navigate('/users/list');
+    } catch (error: any) {
+      console.error('Error detail:', error);
     }
   };
+
+  const removeCard = (index: number) => {
+    const updatedCards = cards.filter((_, i) => i !== index);
+    setCards(updatedCards);
+  };
+
+  const [cards, setCards] = useState([{ id: 1, name: '', price: '', qty: '' }]);
+
+  const addCard = () => {
+    const newCard = { id: cards.length + 1, name: '', price: '', qty: '' };
+    setCards([...cards, newCard]);
+  };
+
+  const handleChange = (index: number, field: string, value: string) => {
+    const updatedCards = cards.map((card, i) =>
+      i === index ? { ...card, [field]: value } : card,
+    );
+    setCards(updatedCards);
+  };
+
   return (
     <DashboardLayout>
       <div className="w-full p-8 space-y-6 ">
@@ -108,144 +121,109 @@ const ActivityAdd: React.FC = () => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <AddFiles />
-            <FormField
-              control={form.control}
-              name="picture"
-              render={({ field: { value, onChange, ...fieldProps } }) => (
-                <FormItem>
-                  <FormLabel>Picture</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...fieldProps}
-                      placeholder="Picture"
-                      type="file"
-                      accept="image/*, application/pdf"
-                      onChange={(event) =>
-                        onChange(event.target.files && event.target.files[0])
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-black">Nama</FormLabel>
+                  <FormLabel className="text-white">Judul kegiatan </FormLabel>
                   <FormControl>
-                    <Input placeholder="Jhon doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="house_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-black">Nomer Rumah</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="1 - 99"
-                      {...field}
-                      value={field.value || ''}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phone_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-black">Nomer Telp</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+62, 08" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-black">Alamat</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Jl.xxxx.xxxxxx" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-black">Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={isPasswordVisible ? 'text' : 'password'} // Toggle between text and password
-                        placeholder="Password"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
-                        onClick={() => setPasswordVisible(!isPasswordVisible)}
-                      >
-                        {isPasswordVisible ? (
-                          <LockOpen className="h-5 w-5" />
-                        ) : (
-                          <Lock className="h-5 w-5" />
-                        )}
-                      </button>
-                    </div>
+                    <Input placeholder="Judul Kegiatan " {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            <AddFiles
+              allowedExtensions={['image/jpg', 'image/jpeg', 'image/png']}
+              maxFileSize={1024 * 1024 * 5}
+              maxFiles={4}
+              onFilesChange={onActivityFileChange}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              {cards.map((card, index) => (
+                <Card key={card.id} className="w-[350px]">
+                  <CardHeader>
+                    <CardTitle>Detail</CardTitle>
+                    <CardDescription>
+                      Isi detail barang yang ada di bon
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid w-full items-center gap-4">
+                      <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor={`name-${card.id}`}>Name barang</Label>
+                        <Input
+                          id={`name-${card.id}`}
+                          placeholder="Name of your project"
+                          value={card.name}
+                          onChange={(e) =>
+                            handleChange(index, 'name', e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor={`price-${card.id}`}>Price</Label>
+                        <Input
+                          id={`price-${card.id}`}
+                          placeholder="1.000.000"
+                          value={card.price}
+                          onChange={(e) =>
+                            handleChange(index, 'price', e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor={`qty-${card.id}`}>Qty</Label>
+                        <Input
+                          id={`qty-${card.id}`}
+                          placeholder="1"
+                          value={card.qty}
+                          onChange={(e) =>
+                            handleChange(index, 'qty', e.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      type="button"
+                      onClick={() => removeCard(index)}
+                      className="mt-2"
+                    >
+                      Remove Card
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+
+              <Card
+                onClick={(e) => {
+                  e.preventDefault(); // Mencegah perilaku default
+                  addCard();
+                }}
+                className="w-[350px] h-[150px] flex items-center justify-center border border-gray-300 rounded-md"
+              >
+                <Plus className="grid w-full items-center gap-4" />
+              </Card>
+            </div>
+
             <Button
               type="submit"
               className="w-full py-2"
-              disabled={addProcess.isLoading}
+              // disabled={addProcess.isLoading}
             >
-              {addProcess.isLoading ? (
+              {/* {addProcess.isLoading ? (
                 <span className="flex flex-row items-center justify-center">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Please wait
                 </span>
               ) : (
-                <span>Sign in</span>
-              )}
+                <span>Input</span>
+              )} */}
+              testing
             </Button>
           </form>
         </Form>
@@ -253,4 +231,5 @@ const ActivityAdd: React.FC = () => {
     </DashboardLayout>
   );
 };
+
 export default ActivityAdd;

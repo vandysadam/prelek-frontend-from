@@ -1,11 +1,21 @@
 // pages/Dashboard.tsx
 
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Label,
+  LabelList,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from '../components/ui/chart';
@@ -21,6 +31,80 @@ import {
 import { TrendingUp } from 'lucide-react';
 import React from 'react';
 
+const chartDatas3 = [
+  { month: 'January', desktop: 186, mobile: 80 },
+  { month: 'February', desktop: 305, mobile: 200 },
+  { month: 'March', desktop: 237, mobile: 120 },
+  { month: 'April', desktop: 73, mobile: 190 },
+  { month: 'May', desktop: 209, mobile: 130 },
+  { month: 'June', desktop: 214, mobile: 140 },
+];
+const chartConfigs3 = {
+  desktop: {
+    label: 'Desktop',
+    color: 'hsl(var(--chart-1))',
+  },
+  mobile: {
+    label: 'Mobile',
+    color: 'hsl(var(--chart-2))',
+  },
+  label: {
+    color: 'hsl(var(--background))',
+  },
+} satisfies ChartConfig;
+
+const chartDatas2 = [
+  { month: 'January', desktop: 186, mobile: 80 },
+  { month: 'February', desktop: 305, mobile: 200 },
+  { month: 'March', desktop: 237, mobile: 120 },
+  { month: 'April', desktop: 73, mobile: 190 },
+  { month: 'May', desktop: 209, mobile: 130 },
+  { month: 'June', desktop: 214, mobile: 140 },
+];
+const chartConfigs2 = {
+  desktop: {
+    label: 'Desktop',
+    color: 'hsl(var(--chart-1))',
+  },
+  mobile: {
+    label: 'Mobile',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
+const chartConfigs = {
+  visitors: {
+    label: 'Visitors',
+  },
+  chrome: {
+    label: 'Chrome',
+    color: 'hsl(var(--chart-1))',
+  },
+  safari: {
+    label: 'Safari',
+    color: 'hsl(var(--chart-2))',
+  },
+  firefox: {
+    label: 'Firefox',
+    color: 'hsl(var(--chart-3))',
+  },
+  edge: {
+    label: 'Edge',
+    color: 'hsl(var(--chart-4))',
+  },
+  other: {
+    label: 'Other',
+    color: 'hsl(var(--chart-5))',
+  },
+} satisfies ChartConfig;
+
+const chartDatas = [
+  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
+  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
+  { browser: 'firefox', visitors: 287, fill: 'var(--color-firefox)' },
+  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
+  { browser: 'other', visitors: 190, fill: 'var(--color-other)' },
+];
 export interface DashboardProps {}
 const chartData = [
   { date: '2024-04-01', desktop: 222, mobile: 150 },
@@ -108,82 +192,312 @@ export default function Dashboard({}: DashboardProps) {
     }),
     [],
   );
+
+  const totalVisitors = React.useMemo(() => {
+    return chartDatas.reduce((acc, curr) => acc + curr.visitors, 0);
+  }, []);
+
   return (
     <DashboardLayout>
-      <Card>
-        <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
-          <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-            <CardTitle>Bar Chart - Interactive</CardTitle>
-            <CardDescription>
-              Showing total visitors for the last 3 months
-            </CardDescription>
-          </div>
-          <div className="flex">
-            {['desktop', 'mobile'].map((key) => {
-              const chart = key as keyof typeof chartConfig;
-              return (
-                <button
-                  key={chart}
-                  data-active={activeChart === chart}
-                  className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
-                  onClick={() => setActiveChart(chart)}
-                >
-                  <span className="text-xs text-muted-foreground">
-                    {chartConfig[chart].label}
-                  </span>
-                  <span className="text-lg font-bold leading-none sm:text-3xl">
-                    {total[key as keyof typeof total].toLocaleString()}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </CardHeader>
+      <div className="space-y-4">
+        <div className="flex justify-between space-x-3 ">
+          <Card className="flex flex-col items-stretch border p-0 sm:flex-row w-full ">
+            <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+              <span className="text-xs text-muted-foreground self-start">
+                Jumlah User
+              </span>
+              <span className="text-lg font-bold leading-none sm:text-3xl place-self-end">
+                3000
+              </span>
+            </div>
+          </Card>
+          <Card className="flex flex-col items-stretch border p-0 sm:flex-row w-full ">
+            <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+              <span className="text-xs text-muted-foreground self-start">
+                Pemasukan
+              </span>
+              <span className="text-lg font-bold leading-none sm:text-3xl place-self-end">
+                3000
+              </span>
+            </div>
+          </Card>
+          <Card className="flex flex-col items-stretch border p-0 sm:flex-row w-full ">
+            <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+              <span className="text-xs text-muted-foreground self-start">
+                Pengeluaran
+              </span>
+              <span className="text-lg font-bold leading-none sm:text-3xl place-self-end">
+                3000
+              </span>
+            </div>
+          </Card>
+          <Card className="flex flex-col items-stretch border p-0 sm:flex-row w-full ">
+            <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+              <span className="text-xs text-muted-foreground self-start">
+                Total Saldo
+              </span>
+              <span className="text-lg font-bold leading-none sm:text-3xl place-self-end">
+                3000
+              </span>
+            </div>
+          </Card>
+        </div>
 
-        <CardContent>
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-[250px] w-full"
-          >
-            <BarChart
-              accessibilityLayer
-              data={chartData}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
+        <Card>
+          <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+            <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+              <CardTitle>Line Chart - Interactive</CardTitle>
+              <CardDescription>
+                Showing total visitors for the last 3 months
+              </CardDescription>
+            </div>
+            <div className="flex">
+              {['desktop', 'mobile'].map((key) => {
+                const chart = key as keyof typeof chartConfig;
+                return (
+                  <button
+                    key={chart}
+                    data-active={activeChart === chart}
+                    className="flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                    onClick={() => setActiveChart(chart)}
+                  >
+                    <span className="text-xs text-muted-foreground">
+                      {chartConfig[chart].label}
+                    </span>
+                    <span className="text-lg font-bold leading-none sm:text-3xl">
+                      {total[key as keyof typeof total].toLocaleString()}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </CardHeader>
+          <CardContent className="px-2 sm:p-6">
+            <ChartContainer
+              config={chartConfig}
+              className="aspect-auto h-[250px] w-full"
             >
-              <CartesianGrid vertical={false} stroke="#d3d3d3" />
-              <XAxis
-                dataKey="date"
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  });
+              <LineChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: 12,
+                  right: 12,
                 }}
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <ChartLegend content={<ChartLegendContent />} />
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  minTickGap={32}
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    });
+                  }}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="w-[150px]"
+                      nameKey="views"
+                      labelFormatter={(value) => {
+                        return new Date(value).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        });
+                      }}
+                    />
+                  }
+                />
+                <Line
+                  dataKey={activeChart}
+                  type="monotone"
+                  stroke={`var(--color-${activeChart})`}
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+        <div className="flex justify-between">
+          <Card className="flex flex-col">
+            <CardHeader className="items-center pb-0">
+              <CardTitle>Pie Chart - Donut with Text</CardTitle>
+              <CardDescription>January - June 2024</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+              <ChartContainer
+                config={chartConfigs}
+                className="mx-auto aspect-square max-h-[250px]"
+              >
+                <PieChart>
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent hideLabel />}
+                  />
+                  <Pie
+                    data={chartDatas}
+                    dataKey="visitors"
+                    nameKey="browser"
+                    innerRadius={60}
+                    strokeWidth={5}
+                  >
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                          return (
+                            <text
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                className="fill-foreground text-3xl font-bold"
+                              >
+                                {totalVisitors.toLocaleString()}
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 24}
+                                className="fill-muted-foreground"
+                              >
+                                Visitors
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex-col gap-2 text-sm">
+              <div className="flex items-center gap-2 font-medium leading-none">
+                Trending up by 5.2% this month{' '}
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="leading-none text-muted-foreground">
+                Showing total visitors for the last 6 months
+              </div>
+            </CardFooter>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Bar Chart - Multiple</CardTitle>
+              <CardDescription>January - June 2024</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfigs2}>
+                <BarChart accessibilityLayer data={chartDatas2}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    tickFormatter={(value) => value.slice(0, 3)}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator="dashed" />}
+                  />
+                  <Bar
+                    dataKey="desktop"
+                    fill="var(--color-desktop)"
+                    radius={4}
+                  />
+                  <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex-col items-start gap-2 text-sm">
+              <div className="flex gap-2 font-medium leading-none">
+                Trending up by 5.2% this month{' '}
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="leading-none text-muted-foreground">
+                Showing total visitors for the last 6 months
+              </div>
+            </CardFooter>
+          </Card>
 
-              <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-              <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-            </BarChart>
-          </ChartContainer>
-        </CardContent>
-        <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="flex gap-2 font-medium leading-none">
-            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-          </div>
-          <div className="leading-none text-muted-foreground">
-            Showing total visitors for the last 6 months
-          </div>
-        </CardFooter>
-      </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Bar Chart - Custom Label</CardTitle>
+              <CardDescription>January - June 2024</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfigs3}>
+                <BarChart
+                  accessibilityLayer
+                  data={chartDatas3}
+                  layout="vertical"
+                  margin={{
+                    right: 16,
+                  }}
+                >
+                  <CartesianGrid horizontal={false} />
+                  <YAxis
+                    dataKey="month"
+                    type="category"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    tickFormatter={(value) => value.slice(0, 3)}
+                    hide
+                  />
+                  <XAxis dataKey="desktop" type="number" hide />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator="line" />}
+                  />
+                  <Bar
+                    dataKey="desktop"
+                    layout="vertical"
+                    fill="var(--color-desktop)"
+                    radius={4}
+                  >
+                    <LabelList
+                      dataKey="month"
+                      position="insideLeft"
+                      offset={8}
+                      className="fill-[--color-label]"
+                      fontSize={12}
+                    />
+                    <LabelList
+                      dataKey="desktop"
+                      position="right"
+                      offset={8}
+                      className="fill-foreground"
+                      fontSize={12}
+                    />
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex-col items-start gap-2 text-sm">
+              <div className="flex gap-2 font-medium leading-none">
+                Trending up by 5.2% this month{' '}
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="leading-none text-muted-foreground">
+                Showing total visitors for the last 6 months
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
     </DashboardLayout>
   );
 }
