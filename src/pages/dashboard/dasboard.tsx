@@ -1,25 +1,18 @@
 // pages/Dashboard.tsx
 
+import { TrendingUp } from 'lucide-react';
+import React from 'react';
 import {
   Bar,
   BarChart,
   CartesianGrid,
   Label,
   LabelList,
-  Line,
-  LineChart,
   Pie,
   PieChart,
   XAxis,
   YAxis,
 } from 'recharts';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '../../components/ui/chart';
-import DashboardLayout from '../../layouts/dasboard-layout';
 import {
   Card,
   CardContent,
@@ -28,8 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from '../../components/ui/card';
-import { TrendingUp } from 'lucide-react';
-import React from 'react';
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '../../components/ui/chart';
+import DashboardLayout from '../../layouts/dasboard-layout';
 import StatisticSections from './statistic-sections/statistic-serctions';
 import MonthlyIncomeSections from './monthly-income-sections/monthly-income-sections';
 

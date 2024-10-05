@@ -1,26 +1,26 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { useState, useCallback, useEffect } from 'react';
+import { Plus } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useGetAllUserPaginatedQuery } from '../../../modules/users/api/user.api';
 import { User } from '../../../modules/users/dtos/models/entity';
+import { useTypedSelector } from '../../../store';
 import DataTable from '../../components/data-tables/datatable';
 import {
   Card,
+  CardContent,
   CardHeader,
   CardTitle,
-  CardContent,
 } from '../../components/ui/card';
-import DashboardLayout from '../../layouts/dasboard-layout';
-import { formatRupiah } from '../../utils/format.rupiah';
-import UserAvatarCell from './components/user.avatar.cell';
-import { CircleDollarSign, Pencil, Plus, Trash2 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '../../components/ui/tooltip';
-import { useTypedSelector } from '../../../store';
+import DashboardLayout from '../../layouts/dasboard-layout';
+import { formatRupiah } from '../../utils/format.rupiah';
+import UserAvatarCell from './components/user.avatar.cell';
 import UserTableAction from './components/user.table.action';
 
 export default function UserPage() {

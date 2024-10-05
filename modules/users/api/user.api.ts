@@ -4,10 +4,6 @@ import { BaseResponse, PaginationResponse } from '../../api/api.types';
 import { editUser, topUp, User, UserAdd } from '../dtos/models/entity';
 import { UserFilterRequest } from '../dtos/requests/user-filter.request';
 
-// import { LoginRequest, LoginResponse } from "./types";
-
-// import { Auth } from "./types";
-
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: apiBaseQuery,
@@ -84,6 +80,15 @@ export const userApi = createApi({
       },
     }),
 
+    getMonthlyTransaction: builder.query<BaseResponse<any>, null>({
+      query: () => {
+        return {
+          method: 'GET',
+          url: `/statistic/monthly-transactions`,
+        };
+      },
+    }),
+
     topupUser: builder.mutation<BaseResponse<topUp>, topUp>({
       query: (data) => {
         const { ...form } = data;
@@ -122,6 +127,7 @@ export const {
   useGetAllUserPaginatedQuery,
   useGetCurrentUserQuery,
   useGetUserDetailQuery,
+  useGetMonthlyTransactionQuery,
   useGetPicListQuery,
   useVerifyUserMutation,
   useUpdateUserMutation,

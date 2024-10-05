@@ -15,6 +15,7 @@ import storage from 'redux-persist/lib/storage';
 import { authApi } from '../modules/auth/auth.api';
 import { authSlice } from '../modules/auth/auth.slice';
 import { userApi } from '../modules/users/api/user.api';
+import { dashboardApi } from '../modules/dasboard/api/dashboard.api';
 
 const persistConfig = {
   key: 'root',
@@ -29,8 +30,10 @@ const reducers = {
 
   /** User Module */
   [userApi.reducerPath]: userApi.reducer,
+  [dashboardApi.reducerPath]: dashboardApi.reducer,
 };
 
+// console.log('reducers', reducers);
 export const rootReducer: Reducer<RootState> = (state, action: any) => {
   if (action.type === FLUSH) {
     state = undefined;
@@ -80,7 +83,11 @@ export const store = configureStore({
       //   thunk: {
       //     extraArgument:,
       //   },
-    }).concat([authApi.middleware, userApi.middleware]),
+    }).concat([
+      authApi.middleware,
+      userApi.middleware,
+      dashboardApi.middleware,
+    ]),
 });
 
 setupListeners(store.dispatch);
