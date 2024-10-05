@@ -34,7 +34,7 @@ import DashboardLoaderPage from './../src/pages/dasboard-layout-loader';
 // const SubscriptionRoutes = React.lazy(
 //   () => import('./pages/subscription/SubscriptionRoutes'),
 // );
-const Dashboard = React.lazy(() => import('./../src/pages/dasboard'));
+const Dashboard = React.lazy(() => import('../src/pages/dashboard/dasboard'));
 const UserPage = React.lazy(() => import('../src/pages/users/user-page'));
 const UserAdd = React.lazy(() => import('../src/pages/users/user-add'));
 const ActivityPage = React.lazy(

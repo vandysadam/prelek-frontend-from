@@ -20,8 +20,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../../components/ui/tooltip';
+import { useTypedSelector } from '../../../store';
+import UserTableAction from './components/user.table.action';
 
 export default function UserPage() {
+  const currentUser = useTypedSelector((state) => state.authSlice.user);
   const [userList, setUserList] = useState<User[]>([]);
   const [totalData, setTotalData] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -93,62 +96,13 @@ export default function UserPage() {
       accessorKey: 'actions', // Kolom untuk tindakan (Edit & Delete)
       header: 'Actions',
       cell: (props) => (
-        <div className="flex space-x-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  className="text-blue-500 hover:underline"
-                  to={`/users/edit/${props.row.original.user_id}`}
-                >
-                  <Pencil size="17" className="inline mr-1" />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit User</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  className="text-red-500 hover:underline"
-                  // onClick={() => handleDelete(props.row.original.user_id)}
-                >
-                  <Trash2 size="17" className="inline mr-1" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete User</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  className="text-blue-500 hover:underline"
-                  to={`/users/topup/${props.row.original.user_id}`}
-                >
-                  <CircleDollarSign size="17" className="inline mr-1" />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Top Up Wallet User</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        <UserTableAction
+          user={props.row.original}
+          current_role={currentUser?.roles}
+        />
       ),
     },
   ];
-  // const handleEdit = (userId: string) => {
-  //   navigate(`/users/edit/${row.original.userId}`);
-  //   console.log(userId); // Navigasi ke halaman edit
-  // };
 
   return (
     <DashboardLayout>
@@ -157,21 +111,24 @@ export default function UserPage() {
           <CardHeader>
             <CardTitle className="flex justify-between">
               Users List
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Plus
-                      onClick={handleClick}
-                      className="cursor-pointer hover:text-blue-500 transition-colors duration-300"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Add User</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              {currentUser?.roles === 'ADMIN' && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Plus
+                        onClick={handleClick}
+                        className="cursor-pointer hover:text-blue-500 transition-colors duration-300"
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add User</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </CardTitle>
           </CardHeader>
+
           <CardContent>
             <DataTable
               columns={columns}
