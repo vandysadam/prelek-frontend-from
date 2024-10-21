@@ -118,10 +118,41 @@ export const userApi = createApi({
         };
       },
     }),
+
+    getAllUserdashboard: builder.query<BaseResponse<any>, null>({
+      query: () => ({
+        method: 'GET',
+        url: '/statistic/total-user',
+      }),
+    }),
+
+    getIncomeExpansesTotalBalance: builder.query<BaseResponse<any>, null>({
+      query: () => ({
+        method: 'GET',
+        url: '/statistic/totalbalance',
+      }),
+    }),
+
+    getPieChart: builder.query<BaseResponse<any>, string | undefined>({
+      query: (year) => ({
+        method: 'GET',
+        url: `/statistic/piechart?year=${year}`,
+      }),
+    }),
+
+    getGroupByMonth: builder.query<BaseResponse<any>, null>({
+      query: () => ({
+        method: 'GET',
+        url: '/statistic/gruoupbymonth',
+      }),
+    }),
   }),
 });
 
 export const {
+  useGetPieChartQuery,
+  useGetIncomeExpansesTotalBalanceQuery,
+  useGetAllUserdashboardQuery,
   useCreateUserMutation,
   useGetAllUserQuery,
   useGetAllUserPaginatedQuery,

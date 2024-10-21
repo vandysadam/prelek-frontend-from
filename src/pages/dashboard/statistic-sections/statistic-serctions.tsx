@@ -1,48 +1,38 @@
-import { Card } from '../../../components/ui/card';
+import {
+  useGetAllUserdashboardQuery,
+  useGetIncomeExpansesTotalBalanceQuery,
+} from '../../../../modules/users/api/user.api';
+import StatCard from './component/statistic.card';
+
+const formatRupiah = (string: number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+  }).format(string);
+};
 
 export default function StatisticSections() {
+  const { data: userData } = useGetAllUserdashboardQuery(null);
+  const totalUser = userData?.data?.total;
+
+  const { data: incomeExpansesData } =
+    useGetIncomeExpansesTotalBalanceQuery(null);
+  const totalIncome = incomeExpansesData?.data[0]?.pemasukan;
+  const totalExpanses = incomeExpansesData?.data[0]?.pengeluaran;
+  const totalBalance = incomeExpansesData?.data[0]?.total_saldo;
+
   return (
     <section className="flex justify-between space-x-3 ">
-      <Card className="flex flex-col items-stretch border p-0 sm:flex-row w-full ">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <span className="text-xs text-muted-foreground self-start">
-            Jumlah User
-          </span>
-          <span className="text-lg font-bold leading-none sm:text-3xl place-self-end">
-            3000
-          </span>
-        </div>
-      </Card>
-      <Card className="flex flex-col items-stretch border p-0 sm:flex-row w-full ">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <span className="text-xs text-muted-foreground self-start">
-            Pemasukan
-          </span>
-          <span className="text-lg font-bold leading-none sm:text-3xl place-self-end">
-            3000
-          </span>
-        </div>
-      </Card>
-      <Card className="flex flex-col items-stretch border p-0 sm:flex-row w-full ">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <span className="text-xs text-muted-foreground self-start">
-            Pengeluaran
-          </span>
-          <span className="text-lg font-bold leading-none sm:text-3xl place-self-end">
-            3000
-          </span>
-        </div>
-      </Card>
-      <Card className="flex flex-col items-stretch border p-0 sm:flex-row w-full ">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <span className="text-xs text-muted-foreground self-start">
-            Total Saldo
-          </span>
-          <span className="text-lg font-bold leading-none sm:text-3xl place-self-end">
-            3000
-          </span>
-        </div>
-      </Card>
+      <StatCard title="Total User" amount={totalUser}></StatCard>
+      <StatCard title="Pemasukan" amount={formatRupiah(totalIncome)}></StatCard>
+      <StatCard
+        title="Pengeluaran"
+        amount={formatRupiah(totalExpanses)}
+      ></StatCard>
+      <StatCard
+        title="Total Saldo"
+        amount={formatRupiah(totalBalance)}
+      ></StatCard>
     </section>
   );
 }

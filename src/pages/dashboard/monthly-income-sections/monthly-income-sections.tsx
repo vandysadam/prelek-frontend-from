@@ -34,7 +34,7 @@ export default function MonthlyIncomeSections() {
 
   const chartConfig = {
     views: {
-      label: 'Page Views',
+      label: 'Jumlah :',
     },
     payment: {
       label: 'Income',
@@ -63,9 +63,7 @@ export default function MonthlyIncomeSections() {
         <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
             <CardTitle>Monthly Transactions</CardTitle>
-            <CardDescription>
-              Showing amount of transactions per months
-            </CardDescription>
+            <CardDescription>transaksi prelek bulan ini</CardDescription>
           </div>
 
           <div className="flex">
