@@ -12,9 +12,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Plus } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useCreateActivityMutation } from '../../../modules/activity/api/activity.api';
 import {
   Card,
   CardContent,
@@ -24,42 +27,48 @@ import {
 } from '../../components/ui/card';
 import AddFiles from '../../components/upload';
 import DashboardLayout from '../../layouts/dasboard-layout';
-import { useCreateActivityMutation } from '../../../modules/users/api/user.api';
 
 const addSchema = z.object({
   title: z.string().min(1, 'Judul kegiatan wajib diisi'),
   deskripsi: z.string().min(1, 'Deskripsi wajib diisi'),
-  activity_photos: z.array(z.instanceof(File)).min(1, 'Foto aktivitas wajib diunggah'), // Required dengan minimal 1 file
-  invoice_photos: z.array(z.instanceof(File)).min(1, 'Foto invoice wajib diunggah'), // Required dengan minimal 1 file
-  cards: z.array(
-    z.object({
-      name: z.string().min(1, 'Nama barang wajib diisi'),
-      description: z.string().min(1, 'Nama barang wajib diisi'),
-      price: z.string().min(1, 'Harga wajib diisi'),
-      qty: z.string().min(1, 'Jumlah barang wajib diisi'),
-    })
-  ).min(1, 'Minimal harus ada 1 barang yang diisi'),
+  activity_photos: z
+    .array(z.instanceof(File))
+    .min(1, 'Foto aktivitas wajib diunggah'), // Required dengan minimal 1 file
+  invoice_photos: z
+    .array(z.instanceof(File))
+    .min(1, 'Foto invoice wajib diunggah'), // Required dengan minimal 1 file
+  cards: z
+    .array(
+      z.object({
+        name: z.string().min(1, 'Nama barang wajib diisi'),
+        description: z.string().min(1, 'Nama barang wajib diisi'),
+        price: z.string().min(1, 'Harga wajib diisi'),
+        qty: z.string().min(1, 'Jumlah barang wajib diisi'),
+      }),
+    )
+    .min(1, 'Minimal harus ada 1 barang yang diisi'),
 });
 
 type AddFormInputs = z.infer<typeof addSchema>;
 
 const ActivityAdd: React.FC = () => {
-  const [formData] = useCreateActivityMutation();
-  const [activityFiles, setActivityPhotos] = useState<File[]>([]);
-  const [activityPhotos, setInvoicePhotos] = useState<File[]>([]);
+  const [createActivity, submitProcess] = useCreateActivityMutation();
+  const [photos, setActivityPhotos] = useState<File[]>([]);
+  const [invoice, setInvoicePhotos] = useState<File[]>([]);
+  const navigate = useNavigate();
 
   const [cards, setCards] = useState([{ id: 1, name: '', price: '', qty: '' }]);
   console.log('ini data cards', cards);
   const onActivityPhotosChange = (files: File[]) => {
     form.setValue('activity_photos', files);
     setActivityPhotos(files);
-    console.log('Files uploaded:', files);
+    // console.log('Files uploaded:', files);
   };
 
   const onInvoicePhotosChange = (files: File[]) => {
     form.setValue('invoice_photos', files);
     setInvoicePhotos(files);
-    console.log('Files uploaded:', files);
+    // console.log('Files uploaded:', files);
   };
 
   const form = useForm<AddFormInputs>({
@@ -69,60 +78,68 @@ const ActivityAdd: React.FC = () => {
       deskripsi: '',
       cards: [
         {
-        name: '',
-        description: '',
-        price: '',
-        qty: '',
-      },
+          name: '',
+          description: '',
+          price: '',
+          qty: '',
+        },
       ],
       activity_photos: undefined,
       invoice_photos: undefined,
     },
   });
+
   const onSubmit = async () => {
-    // const { name, picture, price, qty } = formValue;
     try {
-      const formData = form.getValues();
+      const data = form.getValues();
 
-      console.log('Data dari form:', formData);
+      const formData = new FormData();
+      // Append simple fields
+      formData.append('title', data.title);
+      formData.append('description', data.deskripsi);
+      formData.append('start_date', new Date().toISOString());
 
-      // Tambahkan file yang diupload dari state activityFiles
-      const finalData = {
-        ...formData,
-        activityPhotos,
-        activityFiles, // tambahkan activityFiles ke finalData
-        cards, // tambahkan detail card ke finalData
-      };
+      photos.forEach((file) => {
+        formData.append(`activity_photos`, file);
+      });
 
-      console.log('Data yang akan dikirim:', finalData);
-      // await addProcess({
-      //   name,
-      //   picture,
-      //   price,
-      //   qty,
-      // }).unwrap();
-      // toast.success('User updated successfully!');
-      // navigate('/users/list');
+      // Append invoice photos as files
+      invoice.forEach((file) => {
+        if (file instanceof File) {
+          formData.append(`invoice_photos`, file);
+        }
+      });
+
+      data.cards.forEach((detail, index) => {
+        formData.append(`activity_detail[${index}][name]`, detail.name);
+        formData.append(`activity_detail[${index}][description]`, detail.name);
+        formData.append(`activity_detail[${index}][price]`, detail.price);
+        formData.append(`activity_detail[${index}][qty]`, detail.qty);
+      });
+
+      // console.log('FormData before sending:', Array.from(formData.entries()));
+
+      await createActivity(formData).unwrap();
+
+      toast.success('Activity added successfully!');
+      navigate('/activities/list');
     } catch (error: any) {
       console.error('Error detail:', error);
+      throw error;
     }
   };
 
   const removeCard = (index: number) => {
     form.unregister(`cards.${index}`);
-    setCards((prev) => prev.filter((_,i) => i !== index));
+    setCards((prev) => prev.filter((_, i) => i !== index));
   };
-
-
 
   const addCard = () => {
     setCards((prev) => [
-      ...prev, 
+      ...prev,
       { id: prev.length + 1, name: '', price: '', qty: '' },
     ]);
   };
-
-
 
   return (
     <DashboardLayout>
@@ -130,7 +147,9 @@ const ActivityAdd: React.FC = () => {
         <h2 className="text-2xl font-bold text-center text-black">
           Add Activity
         </h2>
-        <p className="text-sm text-center text-black">tambahkan aktifitas pengeluaran kas</p>
+        <p className="text-sm text-center text-black">
+          tambahkan aktifitas pengeluaran kas
+        </p>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -147,7 +166,7 @@ const ActivityAdd: React.FC = () => {
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="deskripsi"
               render={({ field }) => (
@@ -194,78 +213,86 @@ const ActivityAdd: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="grid w-full items-center gap-4">
-                        <FormField
-                          key={`name-${card.id}`}
-                          control={form.control}
-                          name={`cards.${index}.name`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel htmlFor={`name-${card.id}`}>Name barang</FormLabel>
-                              <FormControl>
-                                <Input
-                                  id={`name-${card.id}`}
-                                  placeholder="Nama barang"
-                                  {...field} // Menghubungkan input dengan react-hook-form
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                         <FormField
-                          key={`description-${card.id}`}
-                          control={form.control}
-                          name={`cards.${index}.description`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel htmlFor={`description-${card.id}`}>Deskripsi</FormLabel>
-                              <FormControl>
-                                <Input
-                                  id={`description-${card.id}`}
-                                  placeholder="Deskripsi"
-                                  {...field} // Menghubungkan input dengan react-hook-form
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          key={`price-${card.id}`}
-                          control={form.control}
-                          name={`cards.${index}.price`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel htmlFor={`price-${card.id}`}>Price</FormLabel>
-                              <FormControl>
-                                <Input
-                                  id={`price-${card.id}`}
-                                  placeholder="1.000.000"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                       <FormField
-                          key={`qty-${card.id}`}
-                          control={form.control}
-                          name={`cards.${index}.qty`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel htmlFor={`qty-${card.id}`}>Qty</FormLabel>
-                              <FormControl>
-                                <Input
-                                  id={`qty-${card.id}`}
-                                  placeholder="1"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                      <FormField
+                        key={`name-${card.id}`}
+                        control={form.control}
+                        name={`cards.${index}.name`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel htmlFor={`name-${card.id}`}>
+                              Name barang
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                id={`name-${card.id}`}
+                                placeholder="Nama barang"
+                                {...field} // Menghubungkan input dengan react-hook-form
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        key={`description-${card.id}`}
+                        control={form.control}
+                        name={`cards.${index}.description`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel htmlFor={`description-${card.id}`}>
+                              Deskripsi
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                id={`description-${card.id}`}
+                                placeholder="Deskripsi"
+                                {...field} // Menghubungkan input dengan react-hook-form
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        key={`price-${card.id}`}
+                        control={form.control}
+                        name={`cards.${index}.price`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel htmlFor={`price-${card.id}`}>
+                              Price
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                id={`price-${card.id}`}
+                                placeholder="1.000.000"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        key={`qty-${card.id}`}
+                        control={form.control}
+                        name={`cards.${index}.qty`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel htmlFor={`qty-${card.id}`}>
+                              Qty
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                id={`qty-${card.id}`}
+                                placeholder="1"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                     <Button
                       type="button"
@@ -292,17 +319,16 @@ const ActivityAdd: React.FC = () => {
             <Button
               type="submit"
               className="w-full py-2"
-              // disabled={addProcess.isLoading}
+              disabled={submitProcess.isLoading}
             >
-              {/* {addProcess.isLoading ? (
+              {submitProcess.isLoading ? (
                 <span className="flex flex-row items-center justify-center">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Please wait
                 </span>
               ) : (
-                <span>Input</span>
-              )} */}
-              save
+                <span>Save</span>
+              )}
             </Button>
           </form>
         </Form>

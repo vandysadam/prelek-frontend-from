@@ -16,6 +16,7 @@ import { authApi } from '../modules/auth/auth.api';
 import { authSlice } from '../modules/auth/auth.slice';
 import { userApi } from '../modules/users/api/user.api';
 import { dashboardApi } from '../modules/dasboard/api/dashboard.api';
+import { activityApi } from '../modules/activity/api/activity.api';
 
 const persistConfig = {
   key: 'root',
@@ -31,6 +32,7 @@ const reducers = {
   /** User Module */
   [userApi.reducerPath]: userApi.reducer,
   [dashboardApi.reducerPath]: dashboardApi.reducer,
+  [activityApi.reducerPath]: activityApi.reducer,
 };
 
 // console.log('reducers', reducers);
@@ -87,6 +89,7 @@ export const store = configureStore({
       authApi.middleware,
       userApi.middleware,
       dashboardApi.middleware,
+      activityApi.middleware,
     ]),
 });
 
