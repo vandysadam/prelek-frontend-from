@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Pastikan CSS diimpor
 
 import { ToastContainer } from 'react-toastify';
 import DashboardLoaderPage from './../src/pages/dasboard-layout-loader';
+import ActivityDetails from '@/pages/activities/activity-details';
 
 const Dashboard = React.lazy(() => import('../src/pages/dashboard/dasboard'));
 const UserPage = React.lazy(() => import('../src/pages/users/user-page'));
@@ -64,6 +65,7 @@ const AppRouter: React.FC = () => {
               <RequireAuth>
                 <Routes>
                   <Route path="/list" element={<ActivityPage />}></Route>
+                  <Route path="/details/:id" element={<ActivityDetails />}></Route>
                   <Route path="/add" element={<ActivityAdd />}></Route>
                   <Route path='/report/:year' element={<ReportPage />}></Route>
                   <Route path='/report-pengeluaran/:year' element={<ReportPagePengeluaran />}></Route>
