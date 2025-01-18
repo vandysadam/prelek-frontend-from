@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthLoginMutation } from '../../modules/auth/auth.api';
 import { authSlice } from '../../modules/auth/auth.slice';
 import { useTypedDispatch } from '../../store';
+import { toast } from 'react-toastify';
 
 // Define the schema using Zod
 const loginSchema = z.object({
@@ -28,13 +29,13 @@ const loginSchema = z.object({
   }),
 });
 
-type LoginFormInputs = z.infer<typeof loginSchema>; // Infer the form value types from the schema
+type LoginFormInputs = z.infer<typeof loginSchema>; 
 
 const LoginPage: React.FC = () => {
   const [authLogin, loginProcess] = useAuthLoginMutation();
-  const [isPasswordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
+  const [isPasswordVisible, setPasswordVisible] = useState(false); 
 
-  // Setup form with the resolver for zod validation
+  
   const form = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
   });
@@ -45,7 +46,7 @@ const LoginPage: React.FC = () => {
   const onSubmit = async (formValue: LoginFormInputs) => {
     const { email, password } = formValue;
     try {
-      // Skip login if the environment variable is set
+      
       const response = await authLogin({
         login_id: email,
         password: password,
@@ -54,13 +55,18 @@ const LoginPage: React.FC = () => {
       const accessToken = response?.data.accessToken;
       const currentUser = response?.data.user;
 
-      // Update Redux state with the user's info
+      
       dispatch(authSlice.actions.updateAccessToken(accessToken));
       dispatch(authSlice.actions.updateCurrentUser(currentUser));
 
       navigate('/');
-    } catch (error) {
-      // Handle errors as needed, e.g., display a toast or log to the console
+    } catch (error: any) {
+        if (error.status === 401) {
+          toast.error('email atau password salah.');
+        }      
+        if (error.status === 404) {
+          toast.error('user tidak ditemukan.');
+        }
       console.log(error);
     }
   };

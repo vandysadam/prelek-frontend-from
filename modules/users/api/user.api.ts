@@ -1,18 +1,37 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { apiBaseQuery } from '../../api/api.query';
-import { BaseResponse, PaginationResponse } from '../../api/api.types';
-import { editUser, topUp, User, UserAdd } from '../dtos/models/entity';
-import { UserFilterRequest } from '../dtos/requests/user-filter.request';
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { apiBaseQuery } from "../../api/api.query";
+import { BaseResponse, PaginationResponse } from "../../api/api.types";
+import {
+  CreateActivity,
+  editUser,
+  Pemasukan,
+  topUp,
+  User,
+  UserAdd,
+} from "../dtos/models/entity";
+import { UserFilterRequest } from "../dtos/requests/user-filter.request";
 
 export const userApi = createApi({
-  reducerPath: 'userApi',
+  reducerPath: "userApi",
   baseQuery: apiBaseQuery,
   endpoints: (builder) => ({
     createUser: builder.mutation<BaseResponse<UserAdd>, UserAdd>({
       query: (data) => {
         return {
-          method: 'POST',
-          url: '/users/create',
+          method: "POST",
+          url: "/users/create",
+          data,
+        };
+      },
+    }),
+    createActivity: builder.mutation<
+      BaseResponse<CreateActivity>,
+      CreateActivity
+    >({
+      query: (data) => {
+        return {
+          method: "POST",
+          url: "/activities/create",
           data,
         };
       },
@@ -23,8 +42,8 @@ export const userApi = createApi({
     >({
       query: (data) => {
         return {
-          method: 'GET',
-          url: '/users',
+          method: "GET",
+          url: "/users",
           params: data,
         };
       },
@@ -32,8 +51,8 @@ export const userApi = createApi({
     getAllUser: builder.query<PaginationResponse<User[]>, UserFilterRequest>({
       query: (data) => {
         return {
-          method: 'GET',
-          url: '/users/userlist',
+          method: "GET",
+          url: "/users/userlist",
           params: data,
         };
       },
@@ -41,8 +60,8 @@ export const userApi = createApi({
     getPicList: builder.query<BaseResponse<User[]>, UserFilterRequest>({
       query: (data) => {
         return {
-          method: 'GET',
-          url: '/api/users/get-pic-list',
+          method: "GET",
+          url: "/api/users/get-pic-list",
           params: data,
         };
       },
@@ -50,7 +69,7 @@ export const userApi = createApi({
     getUserDetail: builder.query<BaseResponse<User>, { id: string }>({
       query: (data) => {
         return {
-          method: 'GET',
+          method: "GET",
           url: `/users/${data.id}`,
         };
       },
@@ -58,24 +77,22 @@ export const userApi = createApi({
     getUserById: builder.query<BaseResponse<User>, { id: string }>({
       query: (data) => {
         return {
-          method: 'GET',
+          method: "GET",
           url: `/users/${data.id}`,
         };
       },
     }),
-    verifyUser: builder.mutation<BaseResponse<User>, { id: string }>({
-      query: ({ id }) => {
-        return {
-          method: 'POST',
-          url: `/users/${id}/verify`,
-        };
-      },
+    getPengeluaran: builder.query<BaseResponse<Pemasukan>, string>({
+      query: (year) => ({
+        method: "GET",
+        url: `/transactions/laporan-transaction-pengeluaran/${year}`,
+      }),
     }),
     getCurrentUser: builder.query<BaseResponse<User>, null>({
       query: () => {
         return {
-          method: 'GET',
-          url: '/users/current-user',
+          method: "GET",
+          url: "/users/current-user",
         };
       },
     }),
@@ -83,7 +100,7 @@ export const userApi = createApi({
     getMonthlyTransaction: builder.query<BaseResponse<any>, null>({
       query: () => {
         return {
-          method: 'GET',
+          method: "GET",
           url: `/statistic/monthly-transactions`,
         };
       },
@@ -93,8 +110,8 @@ export const userApi = createApi({
       query: (data) => {
         const { ...form } = data;
         return {
-          method: 'POST',
-          url: '/wallets/top-up',
+          method: "POST",
+          url: "/wallets/top-up",
           data: { ...form },
         };
       },
@@ -104,7 +121,7 @@ export const userApi = createApi({
       query: (data) => {
         const { user_id, ...form } = data;
         return {
-          method: 'PUT',
+          method: "PUT",
           url: `/users/update/${data.user_id}`,
           data: { ...form },
         };
@@ -113,7 +130,7 @@ export const userApi = createApi({
     deleteUser: builder.mutation<BaseResponse<User>, { id: string }>({
       query: (data) => {
         return {
-          method: 'DELETE',
+          method: "DELETE",
           url: `/api/users/${data.id}`,
         };
       },
@@ -121,46 +138,63 @@ export const userApi = createApi({
 
     getAllUserdashboard: builder.query<BaseResponse<any>, null>({
       query: () => ({
-        method: 'GET',
-        url: '/statistic/total-user',
+        method: "GET",
+        url: "/statistic/total-user",
       }),
     }),
 
     getIncomeExpansesTotalBalance: builder.query<BaseResponse<any>, null>({
       query: () => ({
-        method: 'GET',
-        url: '/statistic/totalbalance',
+        method: "GET",
+        url: "/statistic/totalbalance",
       }),
     }),
 
     getPieChart: builder.query<BaseResponse<any>, string | undefined>({
       query: (year) => ({
-        method: 'GET',
+        method: "GET",
         url: `/statistic/piechart?year=${year}`,
       }),
     }),
 
     getGroupByMonth: builder.query<BaseResponse<any>, null>({
       query: () => ({
-        method: 'GET',
-        url: '/statistic/gruoupbymonth',
+        method: "GET",
+        url: "/statistic/gruoupbymonth",
+      }),
+    }),
+
+    getTotal: builder.query<BaseResponse<Pemasukan>, string>({
+      query: (year) => ({
+        method: "GET",
+        url: `/transactions/laporan-transaction/${year}`,
+      }),
+    }),
+
+    getPemasukan: builder.query<BaseResponse<Pemasukan>, string>({
+      query: (year) => ({
+        method: "GET",
+        url: `/transactions/laporan-transaction-pemasukan/${year}`,
       }),
     }),
   }),
 });
 
 export const {
+  useGetTotalQuery,
+  useGetPemasukanQuery,
   useGetPieChartQuery,
   useGetIncomeExpansesTotalBalanceQuery,
   useGetAllUserdashboardQuery,
   useCreateUserMutation,
+  useCreateActivityMutation,
   useGetAllUserQuery,
   useGetAllUserPaginatedQuery,
   useGetCurrentUserQuery,
   useGetUserDetailQuery,
   useGetMonthlyTransactionQuery,
   useGetPicListQuery,
-  useVerifyUserMutation,
+  useGetPengeluaranQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
   useTopupUserMutation,

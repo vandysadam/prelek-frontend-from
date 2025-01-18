@@ -54,21 +54,31 @@ const editSchema = z.object({
   }),
 });
 
-type EditFormInputs = z.infer<typeof editSchema>;
 
-const UserEdit: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Mendapatkan ID dari URL
-  const validId: string = id!;
+  type EditFormInputs = z.infer<typeof editSchema>;
 
-  const navigate = useNavigate();
-  const handleClick = () => {
+  const UserEdit: React.FC = () => {
+  
+    const { id } = useParams<{ id: string }>(); // Mendapatkan ID dari URL
+  console.log('id dari url gatau url mana ', id);
+    const validId: string = id!;
+
+  
+    const navigate = useNavigate();
+  
+    const handleClick = () => {
     // Navigasi ke /users
     navigate('/users/list');
   };
 
+
   const { data: userData, refetch } = useGetUserDetailQuery({
     id: validId,
   });
+  
+console.log('ini isi dari user data ', userData);
+console.log('ini isi dari valid id ', validId);
+
   const [updateUser, { isLoading: updateLoading }] = useUpdateUserMutation();
 
   const [isPasswordVisible, setPasswordVisible] = useState(false);
@@ -84,6 +94,7 @@ const UserEdit: React.FC = () => {
     },
   });
 
+
   useEffect(() => {
     if (userData) {
       form.reset({
@@ -95,6 +106,8 @@ const UserEdit: React.FC = () => {
       });
     }
   }, [userData, form]);
+
+
 
   const handleSubmit = async (formValue: EditFormInputs) => {
     try {

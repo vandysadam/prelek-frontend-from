@@ -26,7 +26,9 @@ import {
 import { toast } from 'react-toastify';
 
 const addSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, {
+    message: 'Please enter your name.',
+  }),
   password: z.string().min(6, {
     message: 'Password must be at least 6 characters.',
   }),
@@ -81,10 +83,10 @@ const UserAdd: React.FC = () => {
         address,
       }).unwrap();
 
-      toast.success('User updated successfully!');
+      toast.success('User add successfully!');
       navigate('/users/list');
     } catch (error: any) {
-      console.error('Error detail:', error); // Log seluruh objek error
+      console.error('Error detail:', error); 
 
       // Tangkap error dan tampilkan dengan toast
       if (error.data?.message) {

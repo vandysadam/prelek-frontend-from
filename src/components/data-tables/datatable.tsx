@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'; // Adjust based on your file paths
+} from '@/components/ui/table'; 
 import {
   ColumnDef,
   getCoreRowModel,
@@ -39,33 +39,33 @@ enum PaginationAction {
 }
 
 interface DataTableProps<T> {
-  columns: ColumnDef<T>[]; // Use the generic type for columns
-  data: T[]; // Data is of generic type T
+  columns: ColumnDef<T>[]; 
+  data: T[]; 
   totalData: number;
-  isLoading: boolean; // Add loading state
+  isLoading: boolean; 
   currentPage?: number;
   pageCount?: number;
   options?: {
     enableGlobalFilter?: boolean;
   };
-  rowsPerPageOptions?: number[]; // Options for rows per page
-  pageSize?: number; // Initial page size
-  onPaginate?: (page: number) => void; // Handle page changes
-  onPageSizeChange?: (size: number) => void; // Handle page size changes
-  onSearchChange?: (search: string) => void; // Handler for search changes
-  onSortChange?: (sortBy: string, sortDirection: string) => void; // Handler for sorting changes
+  rowsPerPageOptions?: number[]; 
+  pageSize?: number; 
+  onPaginate?: (page: number) => void; 
+  onPageSizeChange?: (size: number) => void; 
+  onSearchChange?: (search: string) => void; 
+  onSortChange?: (sortBy: string, sortDirection: string) => void; 
 }
 
 const DataTable = <T extends object>({
   columns,
   data,
-  isLoading, // Loading state
+  isLoading, 
   totalData,
   currentPage = 1,
   pageCount = 1,
   options = {},
-  rowsPerPageOptions = [5, 10, 25, 50], // Default rows per page options
-  pageSize: initialPageSize = 5, // Default page size of 5
+  rowsPerPageOptions = [5, 10, 25, 50], 
+  pageSize: initialPageSize = 5, 
   onPaginate,
   onPageSizeChange,
   onSearchChange,
@@ -81,9 +81,9 @@ const DataTable = <T extends object>({
   });
   const [columnFilters, setColumnFilters] = useState([]);
   const [debouncedFilter] = useDebounce(globalFilter, 500);
-  const [pageSize, setPageSize] = useState(initialPageSize); // Initialize with the passed `pageSize` prop
+  const [pageSize, setPageSize] = useState(initialPageSize); 
 
-  // Update the `pageSize` whenever `initialPageSize` changes
+  
   useEffect(() => {
     setPageSize(initialPageSize);
   }, [initialPageSize]);
@@ -92,11 +92,7 @@ const DataTable = <T extends object>({
     data,
     columns,
     pageCount,
-    // state: {
-    //   sorting,
-    //   columnFilters,
-    //   globalFilter: debouncedFilter,
-    // },
+    
     state: {
       sorting: [{ id: sorting.id, desc: sorting.direction === 'desc' }],
       columnFilters,
@@ -121,18 +117,18 @@ const DataTable = <T extends object>({
     const newPageSize = Number(e.target.value);
     setPageSize(newPageSize);
     if (onPageSizeChange) {
-      onPageSizeChange(newPageSize); // Trigger the callback
+      onPageSizeChange(newPageSize); 
     }
   };
 
   const handleSortingChange = (columnId: string) => {
-    let newDirection: 'asc' | 'desc' | null = 'desc'; // Default to 'desc'
+    let newDirection: 'asc' | 'desc' | null = 'desc'; 
 
     if (sorting.id === columnId) {
       if (sorting.direction === 'desc') {
-        newDirection = 'asc'; // If currently 'desc', switch to 'asc'
+        newDirection = 'asc'; 
       } else if (sorting.direction === 'asc') {
-        newDirection = null; // If currently 'asc', remove sorting
+        newDirection = null; 
       }
     }
 
@@ -140,18 +136,18 @@ const DataTable = <T extends object>({
 
     if (onSortChange) {
       if (newDirection) {
-        onSortChange(columnId, newDirection); // Only pass when valid direction is set
+        onSortChange(columnId, newDirection); 
       } else {
-        onSortChange('', ''); // Pass empty strings when no sorting is applied
+        onSortChange('', ''); 
       }
     }
   };
 
   return (
     <div>
-      {/* Column Dropdown Menu */}
+      
       <div className="flex items-center justify-between py-4">
-        {/* Global Filter */}
+        
         {options.enableGlobalFilter && (
           <div className="relative w-full pr-5">
             <Search className="absolute right-9 top-3 h-4 w-4 text-muted-foreground" />
@@ -159,10 +155,10 @@ const DataTable = <T extends object>({
               value={globalFilter}
               onChange={(value) => {
                 setGlobalFilter(value.toString());
-                if (onSearchChange) onSearchChange(value.toString()); // Trigger search handler
+                if (onSearchChange) onSearchChange(value.toString()); 
               }}
               placeholder="Search..."
-              className="w-full h-10 pl-3 pr-10" // Adjust height and padding for better alignment
+              className="w-full h-10 pl-3 pr-10" 
             />
           </div>
         )}
@@ -191,52 +187,9 @@ const DataTable = <T extends object>({
         </DropdownMenu>
       </div>
 
-      {/* Data Table */}
+
       <div className="border rounded-md">
         <Table>
-          {/* <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={`
-                      ${
-                        header.column.getCanSort()
-                          ? 'cursor-pointer select-none'
-                          : ''
-                      }
-                      ${
-                        header.column.getIsSorted()
-                          ? 'font-bold text-primary'
-                          : ''
-                      }
-                    `}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    <div className="flex items-center">
-                      {header.isPlaceholder
-                        ? null
-                        : typeof header.column.columnDef.header === 'function'
-                        ? header.column.columnDef.header(header.getContext())
-                        : header.column.columnDef.header}
-                      {header.column.getCanSort() && (
-                        <span>
-                          {header.column.getIsSorted() === 'asc' ? (
-                            <ArrowUp />
-                          ) : header.column.getIsSorted() === 'desc' ? (
-                            <ArrowDown />
-                          ) : (
-                            <ArrowUpDown />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader> */}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -283,7 +236,7 @@ const DataTable = <T extends object>({
           </TableHeader>
 
           <TableBody>
-            {/* Loading Skeleton */}
+       
             {isLoading ? (
               Array(10)
                 .fill(null)
@@ -292,7 +245,7 @@ const DataTable = <T extends object>({
                     {columns.map((col, colIdx) => (
                       <TableCell key={`skeleton-cell-${colIdx}`}>
                         <Skeleton className="h-6 w-full" />{' '}
-                        {/* Loading skeleton */}
+                
                       </TableCell>
                     ))}
                   </TableRow>
@@ -326,9 +279,9 @@ const DataTable = <T extends object>({
         </Table>
       </div>
 
-      {/* Pagination & Rows Per Page Control */}
+    
       <div className="flex items-center justify-between space-x-2 py-4 px-1">
-        {/* Rows Per Page Dropdown */}
+    
         <div className="flex items-center space-x-2">
           <span>Show</span>
           <select
@@ -345,7 +298,7 @@ const DataTable = <T extends object>({
           <span>entries from {totalData} data</span>
         </div>
 
-        {/* Pagination Controls */}
+    
         <div className="flex items-center space-x-2">
           <div className="flex-1 pl-1 text-sm text-muted-foreground">
             Showing {currentPage} of {pageCount} pages

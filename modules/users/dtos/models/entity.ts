@@ -13,6 +13,13 @@ export interface User {
 }
 // ----------------- USER
 
+export interface Pemasukan {
+  tanggal: string;
+  uraian: string;
+  jumlah: number;
+  jenis_transaksi: string;
+}
+
 export interface editUser {
   user_id?: string;
   name?: string;
@@ -36,6 +43,15 @@ export interface UserAdd {
   address: string;
 }
 
+export interface CreateActivity {
+  title: string;
+  description: string;
+  activity_photos: File[];
+  invoice_photos: File[];
+  type: string;
+  amount: number;
+}
+
 // ----------------- WALLET
 export interface WalletEntity {
   id: string;
@@ -46,8 +62,8 @@ export interface WalletEntity {
 }
 
 export enum WALLET_TYPE_ENUM {
-  NORMAL = 'NORMAL', // dompet warga
-  VAULT = 'VAULT', // penyimpanan kas / DOMPET ADMIN
+  NORMAL = "NORMAL", // dompet warga
+  VAULT = "VAULT", // penyimpanan kas / DOMPET ADMIN
 }
 
 export type WALLET_TYPE = keyof typeof WALLET_TYPE_ENUM;
@@ -58,10 +74,10 @@ export type WALLET_TYPE = keyof typeof WALLET_TYPE_ENUM;
  * Organization-scoped roles used by Iqam Global / Ommar.net.
  */
 export enum ROLE_TYPE_ENUM {
-  ADMIN = 'ADMIN',
-  FINANCE = 'FINANCE',
-  OPERATOR = 'OPERATOR',
-  GUEST = 'GUEST',
+  ADMIN = "ADMIN",
+  FINANCE = "FINANCE",
+  OPERATOR = "OPERATOR",
+  GUEST = "GUEST",
 }
 
 export type RoleType = keyof typeof ROLE_TYPE_ENUM;

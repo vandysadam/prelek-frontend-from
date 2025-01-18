@@ -28,29 +28,20 @@ import { Combobox } from '../statistic-sections/component/dropdown-component';
 // tambah input pemasukan
 
 const chartConfigs = {
-  visitors: {
-    label: 'Visitors',
-  },
-  chrome: {
-    label: '',
-    color: 'hsl(var(--chart-1))',
-  },
-  safari: {
-    label: 'Safari',
+  
+
+  expanses: {
     color: 'hsl(var(--chart-2))',
   },
-  firefox: {
+  subscriptionincome: {
     label: 'Firefox',
     color: 'hsl(var(--chart-3))',
   },
-  edge: {
+  subscriptionpayment: {
     label: 'Edge',
     color: 'hsl(var(--chart-4))',
   },
-  other: {
-    label: 'Other',
-    color: 'hsl(var(--chart-5))',
-  },
+
 } satisfies ChartConfig;
 
 export default function AllCashflowSections() {
@@ -68,17 +59,17 @@ export default function AllCashflowSections() {
   const chartMappedData = useMemo(() => {
     return chartData
       ?.map((item) => [
-        { name: 'Expanses', value: item.expanses, fill: 'var(--color-safari)' },
+        { name: 'Pengeluaran kas', value: item.expanses, fill: 'var(--color-expanses)' },
         {
-          name: 'Subscription Income',
+          name: 'Pemasukan Kas      ',
           value: item.subscriptionincome,
-          fill: 'var(--color-firefox)',
+          fill: 'var(--color-subscriptionincome)',
         },
-        {
-          name: 'Subscription Payment',
-          value: item.subscriptionpayment,
-          fill: 'var(--color-edge)',
-        },
+        // {
+        //   name: 'Subscription Payment',
+        //   value: item.subscriptionpayment,
+        //   fill: 'var(--color-subscriptionpayment)',
+        // },
       ])
       .flat();
   }, [chartData]);
@@ -109,7 +100,7 @@ export default function AllCashflowSections() {
   return (
     <Card>
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
+        <CardTitle>Ringkasan kas pertahun</CardTitle>
         <CardDescription>
           <h6>Select years...</h6>
           <Combobox

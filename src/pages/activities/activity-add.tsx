@@ -22,48 +22,63 @@ import {
   CardHeader,
   CardTitle,
 } from '../../components/ui/card';
-import { Label } from '../../components/ui/label';
 import AddFiles from '../../components/upload';
 import DashboardLayout from '../../layouts/dasboard-layout';
+import { useCreateActivityMutation } from '../../../modules/users/api/user.api';
 
 const addSchema = z.object({
-  name: z.string(),
-  file: z.instanceof(File).optional(), // Membuat file opsional
-  picture: z.instanceof(File).optional(), // Membuat picture opsional
+  title: z.string().min(1, 'Judul kegiatan wajib diisi'),
+  deskripsi: z.string().min(1, 'Deskripsi wajib diisi'),
+  activity_photos: z.array(z.instanceof(File)).min(1, 'Foto aktivitas wajib diunggah'), // Required dengan minimal 1 file
+  invoice_photos: z.array(z.instanceof(File)).min(1, 'Foto invoice wajib diunggah'), // Required dengan minimal 1 file
   cards: z.array(
     z.object({
-      name: z.string(),
-      price: z.string(),
-      qty: z.string(),
-    }),
-  ),
+      name: z.string().min(1, 'Nama barang wajib diisi'),
+      description: z.string().min(1, 'Nama barang wajib diisi'),
+      price: z.string().min(1, 'Harga wajib diisi'),
+      qty: z.string().min(1, 'Jumlah barang wajib diisi'),
+    })
+  ).min(1, 'Minimal harus ada 1 barang yang diisi'),
 });
 
 type AddFormInputs = z.infer<typeof addSchema>;
 
 const ActivityAdd: React.FC = () => {
-  // const [addProcess] = useCreateUserMutation();
-  const [activityFiles, setActivityFiles] = useState<File[]>([]);
-  const onActivityFileChange = (files: File[]) => {
-    setActivityFiles(files);
+  const [formData] = useCreateActivityMutation();
+  const [activityFiles, setActivityPhotos] = useState<File[]>([]);
+  const [activityPhotos, setInvoicePhotos] = useState<File[]>([]);
+
+  const [cards, setCards] = useState([{ id: 1, name: '', price: '', qty: '' }]);
+  console.log('ini data cards', cards);
+  const onActivityPhotosChange = (files: File[]) => {
+    form.setValue('activity_photos', files);
+    setActivityPhotos(files);
+    console.log('Files uploaded:', files);
+  };
+
+  const onInvoicePhotosChange = (files: File[]) => {
+    form.setValue('invoice_photos', files);
+    setInvoicePhotos(files);
     console.log('Files uploaded:', files);
   };
 
   const form = useForm<AddFormInputs>({
     resolver: zodResolver(addSchema),
     defaultValues: {
-      name: '',
-      cards: [],
-      file: undefined,
-      picture: undefined,
+      title: '',
+      deskripsi: '',
+      cards: [
+        {
+        name: '',
+        description: '',
+        price: '',
+        qty: '',
+      },
+      ],
+      activity_photos: undefined,
+      invoice_photos: undefined,
     },
   });
-  form.formState.errors && console.log('Errors:', form.formState.errors);
-  // const fileRef = form.register('file');
-
-  // const navigate = useNavigate();
-
-  // const onSubmit = async (formValue: AddFormInputs) => {
   const onSubmit = async () => {
     // const { name, picture, price, qty } = formValue;
     try {
@@ -74,6 +89,7 @@ const ActivityAdd: React.FC = () => {
       // Tambahkan file yang diupload dari state activityFiles
       const finalData = {
         ...formData,
+        activityPhotos,
         activityFiles, // tambahkan activityFiles ke finalData
         cards, // tambahkan detail card ke finalData
       };
@@ -93,23 +109,20 @@ const ActivityAdd: React.FC = () => {
   };
 
   const removeCard = (index: number) => {
-    const updatedCards = cards.filter((_, i) => i !== index);
-    setCards(updatedCards);
+    form.unregister(`cards.${index}`);
+    setCards((prev) => prev.filter((_,i) => i !== index));
   };
 
-  const [cards, setCards] = useState([{ id: 1, name: '', price: '', qty: '' }]);
+
 
   const addCard = () => {
-    const newCard = { id: cards.length + 1, name: '', price: '', qty: '' };
-    setCards([...cards, newCard]);
+    setCards((prev) => [
+      ...prev, 
+      { id: prev.length + 1, name: '', price: '', qty: '' },
+    ]);
   };
 
-  const handleChange = (index: number, field: string, value: string) => {
-    const updatedCards = cards.map((card, i) =>
-      i === index ? { ...card, [field]: value } : card,
-    );
-    setCards(updatedCards);
-  };
+
 
   return (
     <DashboardLayout>
@@ -117,16 +130,16 @@ const ActivityAdd: React.FC = () => {
         <h2 className="text-2xl font-bold text-center text-black">
           Add Activity
         </h2>
-        <p className="text-sm text-center text-black">add user account here.</p>
+        <p className="text-sm text-center text-black">tambahkan aktifitas pengeluaran kas</p>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="name"
+              name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white">Judul kegiatan </FormLabel>
+                  <FormLabel className="text-black">Judul kegiatan </FormLabel>
                   <FormControl>
                     <Input placeholder="Judul Kegiatan " {...field} />
                   </FormControl>
@@ -134,13 +147,41 @@ const ActivityAdd: React.FC = () => {
                 </FormItem>
               )}
             />
-
-            <AddFiles
-              allowedExtensions={['image/jpg', 'image/jpeg', 'image/png']}
-              maxFileSize={1024 * 1024 * 5}
-              maxFiles={4}
-              onFilesChange={onActivityFileChange}
+             <FormField
+              control={form.control}
+              name="deskripsi"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-black">Deskripsi </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Deskripsi " {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+            <Card>
+              <CardHeader>Tambahkan foto aktivitas</CardHeader>
+              <CardContent>
+                <AddFiles
+                  allowedExtensions={['image/jpg', 'image/jpeg', 'image/png']}
+                  maxFileSize={1024 * 1024 * 5}
+                  maxFiles={4}
+                  onFilesChange={onActivityPhotosChange}
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>Tambahkan foto invoice</CardHeader>
+              <CardContent>
+                <AddFiles
+                  allowedExtensions={['image/jpg', 'image/jpeg', 'image/png']}
+                  maxFileSize={1024 * 1024 * 5}
+                  maxFiles={4}
+                  onFilesChange={onInvoicePhotosChange}
+                />
+              </CardContent>
+            </Card>
 
             <div className="grid grid-cols-2 gap-4">
               {cards.map((card, index) => (
@@ -153,41 +194,79 @@ const ActivityAdd: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="grid w-full items-center gap-4">
-                      <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor={`name-${card.id}`}>Name barang</Label>
-                        <Input
-                          id={`name-${card.id}`}
-                          placeholder="Name of your project"
-                          value={card.name}
-                          onChange={(e) =>
-                            handleChange(index, 'name', e.target.value)
-                          }
+                        <FormField
+                          key={`name-${card.id}`}
+                          control={form.control}
+                          name={`cards.${index}.name`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor={`name-${card.id}`}>Name barang</FormLabel>
+                              <FormControl>
+                                <Input
+                                  id={`name-${card.id}`}
+                                  placeholder="Nama barang"
+                                  {...field} // Menghubungkan input dengan react-hook-form
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </div>
-                      <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor={`price-${card.id}`}>Price</Label>
-                        <Input
-                          id={`price-${card.id}`}
-                          placeholder="1.000.000"
-                          value={card.price}
-                          onChange={(e) =>
-                            handleChange(index, 'price', e.target.value)
-                          }
+                         <FormField
+                          key={`description-${card.id}`}
+                          control={form.control}
+                          name={`cards.${index}.description`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor={`description-${card.id}`}>Deskripsi</FormLabel>
+                              <FormControl>
+                                <Input
+                                  id={`description-${card.id}`}
+                                  placeholder="Deskripsi"
+                                  {...field} // Menghubungkan input dengan react-hook-form
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </div>
-                      <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor={`qty-${card.id}`}>Qty</Label>
-                        <Input
-                          id={`qty-${card.id}`}
-                          placeholder="1"
-                          value={card.qty}
-                          onChange={(e) =>
-                            handleChange(index, 'qty', e.target.value)
-                          }
+                        <FormField
+                          key={`price-${card.id}`}
+                          control={form.control}
+                          name={`cards.${index}.price`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor={`price-${card.id}`}>Price</FormLabel>
+                              <FormControl>
+                                <Input
+                                  id={`price-${card.id}`}
+                                  placeholder="1.000.000"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </div>
+                       <FormField
+                          key={`qty-${card.id}`}
+                          control={form.control}
+                          name={`cards.${index}.qty`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor={`qty-${card.id}`}>Qty</FormLabel>
+                              <FormControl>
+                                <Input
+                                  id={`qty-${card.id}`}
+                                  placeholder="1"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                     </div>
-
                     <Button
                       type="button"
                       onClick={() => removeCard(index)}
@@ -223,7 +302,7 @@ const ActivityAdd: React.FC = () => {
               ) : (
                 <span>Input</span>
               )} */}
-              testing
+              save
             </Button>
           </form>
         </Form>

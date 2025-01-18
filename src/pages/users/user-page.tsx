@@ -56,25 +56,25 @@ export default function UserPage() {
     // Navigasi ke /users/add
     navigate('/users/add');
   };
-  // Fetch data and update states when API response changes
+  
   const fetchData = useCallback(() => {
     if (data?.data) {
       setUserList(data.data);
-      setTotalData(data.total || 0); // Set total number of entries
+      setTotalData(data.total || 0); 
     }
   }, [data]);
 
-  // Effect to update when data changes
+  
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Refetch data when page, page size, or sorting changes
+  
   useEffect(() => {
     refetch();
   }, [currentPage, pageSize, searchParams, sortBy, sortDirection, refetch]);
 
-  // Column definitions for the table
+  
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'name',
@@ -90,7 +90,7 @@ export default function UserPage() {
     {
       accessorKey: 'wallet.balance',
       header: 'Balance',
-      cell: (props) => formatRupiah(props.row.original?.wallet?.balance ?? 0), // Apply Rupiah formatting
+      cell: (props) => formatRupiah(props.row.original?.wallet?.balance ?? 0), // Rupiah formatting
     },
     {
       accessorKey: 'actions', // Kolom untuk tindakan (Edit & Delete)

@@ -39,13 +39,11 @@ export default function Sidebar({}: SidebarProps) {
           links={[
             {
               title: 'Dashboard',
-              label: '128',
               icon: LayoutDashboard,
               href: '/',
             },
             {
               title: 'Users',
-              label: '9',
               icon: User,
               href: '/users/list',
             },

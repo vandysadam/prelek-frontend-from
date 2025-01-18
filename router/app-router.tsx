@@ -9,40 +9,14 @@ import 'react-toastify/dist/ReactToastify.css'; // Pastikan CSS diimpor
 import { ToastContainer } from 'react-toastify';
 import DashboardLoaderPage from './../src/pages/dasboard-layout-loader';
 
-// import 'react-toastify/dist/ReactToastify.css';
-// import RequireAuth from './components/auth/RequireAuth';
-// import Analytics from './pages/Analytics';
-// import SitePages from './pages/cms/SitePages';
-// import ResetPassword from './pages/ResetPassword';
-// import Signin from './pages/Signin';
-// // import Signup from './pages/Signup';
-// // import SigninUser from './pages/SigninUser';
-
-// import { ToastContainer } from 'react-toastify';
-// import CompanyRoutes from './pages/company/CompanyRoutes';
-// import UserManagementRoutes from './pages/user-management/UserManagementRoutes';
-// import DashboardLoader from './pages/utility/DashboardLoader';
-// import PageNotFound from './pages/utility/PageNotFound';
-
-// import OrderRoutes from './pages/orders/OrderRoutes';
-// import EmployeeRoutes from './pages/employee/EmployeeRoutes';
-// import CompanySettingsRoutes from './pages/company-settings/CompanySettingsRoutes';
-
-// const ProductRoutes = React.lazy(
-//   () => import('./pages/products/ProductRoutes'),
-// );
-// const SubscriptionRoutes = React.lazy(
-//   () => import('./pages/subscription/SubscriptionRoutes'),
-// );
 const Dashboard = React.lazy(() => import('../src/pages/dashboard/dasboard'));
 const UserPage = React.lazy(() => import('../src/pages/users/user-page'));
 const UserAdd = React.lazy(() => import('../src/pages/users/user-add'));
-const ActivityPage = React.lazy(
-  () => import('../src/pages/activities/activity-page'),
-);
-const ActivityAdd = React.lazy(
-  () => import('../src/pages/activities/activity-add'),
-);
+const ActivityPage = React.lazy(() => import('../src/pages/activities/activity-page'));
+const ActivityAdd = React.lazy(() => import('../src/pages/activities/activity-add'));
+const ReportPage = React.lazy(() => import('../src/pages/activities/report-page'));
+const ReportPagePengeluaran = React.lazy(() => import('../src/pages/activities/report-page-pengeluaran'));
+const ReportPageTotal = React.lazy(() => import('../src/pages/activities/report-page-total'));
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -91,7 +65,10 @@ const AppRouter: React.FC = () => {
                 <Routes>
                   <Route path="/list" element={<ActivityPage />}></Route>
                   <Route path="/add" element={<ActivityAdd />}></Route>
-                  <Route path="/edit/:id" element={<UserEdit />}></Route>
+                  <Route path='/report/:year' element={<ReportPage />}></Route>
+                  <Route path='/report-pengeluaran/:year' element={<ReportPagePengeluaran />}></Route>
+                  <Route path='/report-total/:year' element={<ReportPageTotal />}></Route>
+                  {/* <Route path="/edit/:id" element={<UserEdit />}></Route> */}
                 </Routes>
               </RequireAuth>
             </React.Suspense>

@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { RoleType, User } from '../../../../modules/users/dtos/models/entity';
 
-import { CircleDollarSign, Pencil, Trash2 } from 'lucide-react';
+import { CircleDollarSign, Pencil, QrCode, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
   Tooltip,
@@ -9,21 +9,36 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../../../components/ui/tooltip';
+import QRCodeModal from '../user-qrcode';
 
 interface UserAvatarCellProps {
   user: User;
   current_role: RoleType | undefined;
 }
+  
 
-// Smaller avatar component for table cells
+ 
+
 const UserTableAction: FC<UserAvatarCellProps> = ({
   user,
   current_role,
 }: UserAvatarCellProps) => {
+  
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+  const handleOpenQRModal = () => {
+    setIsQRModalOpen(true);
+  };
+
+  const handleCloseQRModal = () => {
+    setIsQRModalOpen(false);
+  };
+  
   return (
     <div className="flex space-x-2">
       {current_role === 'ADMIN' && (
         <>
+
+        
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -40,6 +55,8 @@ const UserTableAction: FC<UserAvatarCellProps> = ({
             </Tooltip>
           </TooltipProvider>
 
+
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -55,8 +72,27 @@ const UserTableAction: FC<UserAvatarCellProps> = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="text-black-500 hover:underline"
+                  onClick={handleOpenQRModal}>
+                  <QrCode size="17" className="inline mr-1" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Qr Code User</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </>
       )}
+
+
 
       {current_role === 'FINANCE' && (
         <TooltipProvider>
@@ -74,7 +110,16 @@ const UserTableAction: FC<UserAvatarCellProps> = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      )}
+        )}
+
+
+
+        <QRCodeModal
+        walletId={user.wallet?.id || ''}
+        isOpen={isQRModalOpen}
+        onClose={handleCloseQRModal} 
+        username={user.name}
+        houseNumber={String(user.house_number) || ''}/>
     </div>
   );
 };
